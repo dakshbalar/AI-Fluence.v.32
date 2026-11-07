@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quests & Achievements</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&family=Shippori+Mincho+B1:wght@800&family=Bungee&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#0d0716;--fg:#F3E8FF;--a1:#E9B8FF;--a2:#A855F7;--a3:#6D28D9;--card:#150c22;--glow:168,85,247;--g1:#3b1a7a;--g2:#C084FC;--h1:#9d84c4;--h2:#FFD1E8;--hf:'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho',serif;--hw:800;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--fg);font-family:'Kanit',sans-serif;transition:background .5s}
+button{font-family:inherit;cursor:pointer}
+main{max-width:640px;margin:0 auto;padding:28px 20px 80px;position:relative;z-index:1;overflow-x:clip}
+main::before{content:"";position:absolute;top:0;left:50%;width:min(100vw,640px);height:520px;transform:translateX(-50%);background:radial-gradient(circle at 50% 0,rgba(var(--glow),.16),transparent 65%),repeating-radial-gradient(circle at 50% 0,transparent 0 22px,rgba(var(--glow),.06) 22px 24px);-webkit-mask:linear-gradient(#000,transparent);mask:linear-gradient(#000,transparent);pointer-events:none}
+.fx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.fx span{position:absolute;top:-30px;color:var(--a1);opacity:.45;animation:fall linear infinite}
+@keyframes fall{to{transform:translate(var(--dx,40px),110vh) rotate(360deg)}}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:20px;border-bottom:1px solid rgba(var(--glow),.3);position:relative}
+.hero-heading{background:linear-gradient(180deg,var(--h1),var(--h2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-family:var(--hf);font-weight:var(--hw);text-transform:uppercase;line-height:1.05;letter-spacing:-.01em}
+h1{font-size:clamp(1.6rem,6.6vw,2.5rem);font-family:'Kanit',sans-serif;font-weight:900;line-height:1}
+.reset{display:flex;align-items:center;gap:8px;margin-top:8px;font-weight:300;font-size:.95rem;opacity:.7}
+.gems{display:flex;align-items:center;gap:8px;border:2px solid var(--a2);border-radius:999px;padding:8px 18px;font-weight:600;font-size:1.3rem;color:var(--a1);white-space:nowrap;transition:transform .3s}
+.gems.bump{transform:scale(1.12)}
+svg.i{width:1em;height:1em;flex:none}
+.big{margin-top:28px;border:2px solid var(--a2);border-radius:40px;padding:22px;background:linear-gradient(160deg,rgba(var(--glow),.22),var(--bg) 62%);position:relative;transition:border-color .4s}
+.deco{position:absolute;right:18px;top:62px;width:84px;height:84px;opacity:.95;pointer-events:none}
+.deco svg{width:100%;height:100%}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{display:flex;align-items:center;gap:8px;border:2px solid var(--a2);background:rgba(var(--glow),.2);color:var(--a1);border-radius:999px;padding:6px 14px 6px 18px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.85rem}
+.tag svg{transition:transform .3s}.tag[aria-expanded=true] svg{transform:rotate(180deg)}
+.ev{font-weight:500;color:var(--a1);display:flex;gap:6px;align-items:center;font-size:.9rem}
+.big h2{font-size:clamp(1.9rem,8.5vw,2.9rem);margin:18px 0 6px;max-width:68%}
+.left{display:flex;gap:8px;align-items:center;font-weight:600;text-transform:uppercase;letter-spacing:.08em;opacity:.65}
+.pick{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s ease;position:relative;z-index:2}
+.pick.open{grid-template-rows:1fr}
+.pick>div{overflow:hidden;display:flex;flex-direction:column;gap:10px}
+.pick.open>div{padding-top:16px}
+.mrow{display:flex;align-items:center;gap:14px;text-align:left;width:100%;border:2px solid rgba(var(--glow),.25);border-radius:26px;background:rgba(0,0,0,.4);color:var(--fg);padding:12px 14px;transition:.2s}
+.mrow.on{border-color:var(--a1);box-shadow:0 0 22px rgba(var(--glow),.3)}
+.sw{width:46px;height:46px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:1.3rem;border:2px solid #fff3;color:#fff}
+.mi{flex:1;min-width:0}.mi b{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:1rem}
+.mi b em{font-style:normal;font-weight:500;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a1)}
+.mi small{display:block;font-weight:300;opacity:.65;font-size:.78rem;margin:1px 0 6px}
+.mi .bar{height:7px}.mi .bar i{box-shadow:none}
+.pbox{margin-top:20px;border:1px solid rgba(var(--glow),.3);border-radius:28px;padding:18px 20px;background:rgba(0,0,0,.35)}
+.prow{display:flex;justify-content:space-between;font-weight:500;font-size:1.1rem;margin-bottom:12px}
+.prow span:last-child{color:var(--a1);font-weight:600}
+.bar{height:26px;border-radius:999px;background:#ffffff14;position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;width:0;border-radius:999px;background:linear-gradient(90deg,var(--a3),var(--a2),var(--g2));transition:width .8s cubic-bezier(.25,.1,.25,1);box-shadow:0 0 16px rgba(var(--glow),.5)}
+.bar b{position:absolute;inset:0;display:grid;place-items:center;font-weight:500;letter-spacing:.2em;font-size:.8rem;text-shadow:0 1px 3px #000}
+.tabs{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:6px;border:1px solid rgba(var(--glow),.35);border-radius:999px;padding:6px}
+.tab{border:2px solid transparent;border-radius:999px;background:none;color:var(--fg);padding:12px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.95rem;opacity:.6;display:flex;gap:8px;align-items:center;justify-content:center;transition:.2s}
+.tab.on,.act.claim{opacity:1;color:#fff;border-color:#fff;background:linear-gradient(123deg,var(--g1) 7%,var(--a3) 40%,var(--a2) 75%,var(--g2) 100%);box-shadow:0 4px 12px rgba(var(--glow),.3)}
+#list{margin-top:20px;display:flex;flex-direction:column;gap:16px}
+.q{display:flex;align-items:center;gap:16px;border:2px solid rgba(var(--glow),.3);border-radius:40px;padding:20px;background:var(--card);opacity:0;transform:translateY(30px);animation:in .7s cubic-bezier(.25,.1,.25,1) forwards;animation-delay:var(--d,0s);transition:border-color .3s}
+.q.ready{border-color:var(--a1);box-shadow:0 0 30px rgba(var(--glow),.28)}
+.q.done{animation-name:in2}
+@keyframes in{to{opacity:1;transform:none}}
+@keyframes in2{to{opacity:.6;transform:none}}
+.ico{position:relative;width:76px;height:76px;flex:none;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle,rgba(var(--glow),.28),transparent 70%)}
+.ico svg{width:64px;height:64px}
+.ck{position:absolute;right:-2px;bottom:-2px;width:26px;height:26px;border-radius:50%;background:var(--a3);border:3px solid var(--card);display:grid;place-items:center}
+.ck svg{width:14px;height:14px}
+.info{flex:1;min-width:0}
+.info h3{font-weight:600;font-size:1.1rem;line-height:1.2}
+.info p{font-weight:300;opacity:.6;font-size:.88rem;margin:4px 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini{display:flex;gap:10px;align-items:center;font-weight:300;font-size:.85rem}
+.mini .bar{height:8px;flex:1}.mini .bar i{box-shadow:none;width:var(--w)}
+.act{flex:none;min-width:104px;border-radius:999px;border:2px solid var(--fg);background:none;color:var(--fg);padding:11px 16px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;font-size:.85rem}
+.act.cl{border-color:var(--a3);color:var(--a1);background:rgba(var(--glow),.15);cursor:default}
+.rw{display:flex;justify-content:center;align-items:center;gap:4px;font-size:.78rem;font-weight:500;letter-spacing:.06em;color:var(--a1);margin-top:6px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,120px);background:#fff;color:#0C0C0C;border-radius:999px;padding:12px 26px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:.85rem;transition:transform .4s;z-index:9;white-space:nowrap}
+.toast.show{transform:translate(-50%,0)}
+body[data-m=nov]{--bg:#09090b;--fg:#F5F5F5;--a1:#FFD400;--a2:#FF2E88;--a3:#A0155B;--card:#111114;--glow:255,46,136;--g1:#5a0d33;--g2:#FFD400;--h1:#FFD400;--h2:#FF2E88;--hf:'Bungee','Kanit',sans-serif;--hw:400}
+body[data-m=nov] .big{border-radius:18px;box-shadow:8px 8px 0 var(--a1)}
+body[data-m=nov] .q,body[data-m=nov] .pbox,body[data-m=nov] .mrow{border-radius:14px}
+body[data-m=nov] .q{box-shadow:4px 4px 0 rgba(255,212,0,.55)}
+body[data-m=nov] .deco svg{animation:spin 6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+body[data-m=dec]{--bg:#08130d;--fg:#FFF6E8;--a1:#F7CF62;--a2:#D7263D;--a3:#8E0F22;--card:#0f2118;--glow:215,38,61;--g1:#4a0813;--g2:#2E9E5B;--h1:#F7CF62;--h2:#FF8A8A;--hf:'Mountains of Christmas','Kanit',cursive;--hw:700}
+body[data-m=dec] .big{border-color:#2E9E5B;background:linear-gradient(160deg,rgba(215,38,61,.25),var(--bg) 62%)}
+body[data-m=dec] .q{border-color:rgba(46,158,91,.5)}
+body[data-m=dec] .q.ready{border-color:var(--a1)}
+@media(max-width:440px){.q{padding:16px;gap:12px}.ico{width:60px;height:60px}.ico svg{width:50px;height:50px}.act{min-width:88px;padding:10px 12px;font-size:.78rem}.big{padding:18px}.deco{width:64px;height:64px;top:70px;right:14px}}
+@media(prefers-reduced-motion:reduce){.q{animation:none;opacity:1;transform:none}.q.done{opacity:.6}.bar i{transition:none}.fx{display:none}.deco svg{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="fx" id="fx"></div>
+<main>
+  <header>
+    <div><h1 class="hero-heading">Quests &amp; Achievements</h1>
+      <div class="reset"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="rst">Resets in …</span></div></div>
+    <div class="gems" id="gems"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z" style="fill:var(--a1)"/><path d="M2 9h20M9 3l-2 6 5 12 5-12-2-6" fill="none" stroke="#000" stroke-opacity=".5" stroke-width="1.2"/></svg><span id="gn">310</span></div>
+  </header>
+
+  <section class="big">
+    <div class="top"><button class="tag" id="tag" aria-expanded="false" aria-controls="pick">Monthly Track <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><span class="ev" id="evn"></span></div>
+    <h2 class="hero-heading" id="mname">Quest</h2>
+    <div class="left"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="mleft"></span></div>
+    <div class="pick" id="pick"><div id="mlist"></div></div>
+    <div class="deco" id="deco"></div>
+    <div class="pbox"><div class="prow"><span>20 Quest Points</span><span id="togo"></span></div>
+      <div class="bar"><i id="mbar"></i><b id="mtxt"></b></div></div>
+  </section>
+
+  <div class="tabs"><button class="tab on" data-t="daily"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M12 8c-3-5-7-2-4 0M12 8c3-5 7-2 4 0"/></svg>Daily Tasks</button><button class="tab" data-t="life"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="9" r="6"/><path d="M8 14l-2 8 6-3 6 3-2-8"/></svg>Lifetime</button></div>
+  <div id="list"></div>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var gems=310,qp=11,tab='daily';
+  var data={
+    daily:[
+      {t:'Complete 2 Learning Lessons',d:'Finish any 2 guided interactive levels of your choice.',p:1,g:2,r:10},
+      {t:'Score 90%+ in a Quiz Drill',d:'Show exceptional accuracy in any practice quiz.',p:1,g:1,r:15,claimed:true},
+      {t:'Review 10 Flashcards',d:'Keep your memory sharp with a quick review round.',p:4,g:10,r:10},
+      {t:'Study for 20 Minutes',d:'Spend focused time learning in any course today.',p:12,g:20,r:20},
+      {t:'Share Your Progress',d:'Send a progress card to a friend or on social.',p:0,g:1,r:5}
+    ],
+    life:[
+      {t:'Complete 50 Lessons',d:'Reach the 50 lesson milestone across all courses.',p:38,g:50,r:100},
+      {t:'7 Day Streak',d:'Study seven days in a row without missing one.',p:7,g:7,r:50},
+      {t:'Perfect Score Master',d:'Earn 100% on ten different quiz drills.',p:3,g:10,r:75},
+      {t:'Collect 1000 Gems',d:'Grow your gem collection to one thousand.',p:310,g:1000,r:200}
+    ]
+  };
+  var gem='<svg class="i" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z" style="fill:var(--a1)"/></svg>';
+  var chk='<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M4 12l5 5L20 6"/></svg>';
+  function chest(open){var a=open?'var(--a1)':'var(--a2)',b=open?'var(--a2)':'var(--a3)';
+    return '<svg viewBox="0 0 64 64"><ellipse cx="32" cy="58" rx="22" ry="3" fill="#000" opacity=".4"/><rect x="8" y="28" width="48" height="28" rx="5" fill="'+b+'" stroke="#D7E2EA" stroke-width="2"/>'+(open?'<path d="M8 28 L14 10 H50 L56 28Z" fill="'+a+'" stroke="#D7E2EA" stroke-width="2"/><ellipse cx="32" cy="28" rx="20" ry="4" fill="#BBCCD7"/>':'<path d="M8 28a24 18 0 0 1 48 0z" fill="'+a+'" stroke="#D7E2EA" stroke-width="2"/>')+'<rect x="14" y="26" width="6" height="30" style="fill:var(--a1)" opacity=".8"/><rect x="44" y="26" width="6" height="30" style="fill:var(--a1)" opacity=".8"/><rect x="27" y="30" width="10" height="12" rx="2" fill="#D7E2EA"/><circle cx="32" cy="35" r="2" fill="#0057E7"/></svg>'}
+  var list=document.getElementById('list');
+  function render(){
+    list.innerHTML=data[tab].map(function(q,i){
+      var done=q.p>=q.g,pct=Math.min(100,q.p/q.g*100);
+      var btn=q.claimed?'<button class="act cl" disabled>'+chk+' Claimed</button>':done?'<button class="act claim" data-i="'+i+'">Claim</button>':'<button class="act" data-i="'+i+'">Start</button>';
+      return '<div class="q'+(done&&!q.claimed?' ready':'')+(q.claimed?' done':'')+'" style="--d:'+i*.08+'s"><div class="ico">'+chest(q.claimed)+(q.claimed?'<span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>':'')+'</div><div class="info"><h3>'+q.t+'</h3><p>'+q.d+'</p><div class="mini"><div class="bar"><i style="--w:'+pct+'%;width:'+pct+'%"></i></div><span>'+Math.min(q.p,q.g)+'/'+q.g+'</span></div></div><div>'+btn+'<span class="rw">+'+q.r+' '+gem+'</span></div></div>'}).join('');
+  }
+  var D=function(s){return '<svg viewBox="0 0 64 64">'+s+'</svg>'};
+  var M=[
+   {i:9,k:'oct',n:'October',th:'Japan Festival',ev:'Matsuri Festival',ch:'❀',sw:'linear-gradient(135deg,#6D28D9,#F472B6)',dx:D('<path d="M4 17Q32 24 60 17L58 11Q32 18 6 11Z" fill="#A855F7"/><rect x="10" y="21" width="44" height="4" fill="#F472B6"/><rect x="14" y="25" width="6" height="34" fill="#A855F7"/><rect x="44" y="25" width="6" height="34" fill="#A855F7"/><rect x="29" y="17" width="6" height="8" fill="#F472B6"/><circle cx="32" cy="42" r="7" fill="#E11D48"/><rect x="31" y="33" width="2" height="4" fill="#FFD1E8"/>')},
+   {i:10,k:'nov',n:'November',th:'Hip-Hop Cypher',ev:'Block Party',ch:'★',sw:'linear-gradient(135deg,#FF2E88,#FFD400)',dx:D('<circle cx="32" cy="32" r="29" fill="#111" stroke="#FFD400" stroke-width="3"/><circle cx="32" cy="32" r="21" fill="none" stroke="#FFD400" stroke-opacity=".35"/><circle cx="32" cy="32" r="12" fill="#FF2E88"/><circle cx="32" cy="32" r="3" fill="#111"/><path d="M14 22a21 21 0 0 1 12-9" stroke="#fff" stroke-opacity=".6" stroke-width="2" fill="none"/>')},
+   {i:11,k:'dec',n:'December',th:'Winter Christmas',ev:'Holiday Cheer',ch:'❄',sw:'linear-gradient(135deg,#D7263D,#2E9E5B)',dx:D('<path d="M32 6l16 20H38l14 18H12l14-18H16z" fill="#2E9E5B"/><rect x="28" y="44" width="8" height="10" fill="#8B5A2B"/><path d="M32 2l2 4 4 .5-3 3 .8 4-3.8-2-3.8 2 .8-4-3-3 4-.5z" fill="#F7CF62"/><circle cx="26" cy="30" r="3" fill="#D7263D"/><circle cx="38" cy="38" r="3" fill="#F7CF62"/><circle cx="24" cy="42" r="3" fill="#D7263D"/>')}
+  ];
+  var cur=new Date().getMonth(),sel=M.filter(function(m){return m.i===cur})[0]||M[0];
+  function perf(m){return m.i===cur?qp:0}
+  function tier(p){return p>=16?'Gold':p>=8?'Silver':p>0?'Bronze':'—'}
+  function dleft(m){var now=new Date(),y=now.getFullYear();
+    if(m.i===cur)return Math.ceil((new Date(y,m.i+1,1)-now)/864e5)+'d left';
+    return m.i>cur?'Starts in '+Math.ceil((new Date(y,m.i,1)-now)/864e5)+'d':'Ended'}
+  function fx(m){var f=document.getElementById('fx');f.innerHTML='';
+    for(var n=0;n<14;n++){var s=document.createElement('span');s.textContent=m.ch;
+      s.style.cssText='left:'+Math.random()*100+'%;font-size:'+(10+Math.random()*14)+'px;animation-duration:'+(9+Math.random()*10)+'s;animation-delay:-'+Math.random()*12+'s;--dx:'+(Math.random()*120-60)+'px';f.appendChild(s)}}
+  function mon(){
+    document.body.dataset.m=sel.k;var p=perf(sel);
+    document.getElementById('mname').textContent=sel.n+' Quest';
+    document.getElementById('evn').textContent=sel.ev;
+    document.getElementById('deco').innerHTML=sel.dx;
+    document.getElementById('mleft').textContent=dleft(sel);
+    document.getElementById('togo').textContent=Math.max(0,20-p)+' to go';
+    document.getElementById('mtxt').textContent=p+' / 20';
+    document.getElementById('mbar').style.width=Math.min(100,p/20*100)+'%';
+    document.getElementById('mlist').innerHTML=M.map(function(m){var q=perf(m),st=m.i===cur?'Current':m.i>cur?'Upcoming':'Done';
+      return '<button class="mrow'+(m===sel?' on':'')+'" data-k="'+m.k+'"><span class="sw" style="background:'+m.sw+'">'+m.ch+'</span><span class="mi"><b>'+m.n+'<em>'+st+'</em></b><small>'+m.th+' · '+(m.i>cur?dleft(m):q+'/20 pts · '+Math.round(q/20*100)+'% · '+tier(q))+'</small><div class="bar"><i style="width:'+q/20*100+'%"></i></div></span></button>'}).join('');
+  }
+  function setM(m){var ch=m!==sel;sel=m;mon();if(ch)fx(m)}
+  document.getElementById('tag').addEventListener('click',function(){var o=document.getElementById('pick').classList.toggle('open');this.setAttribute('aria-expanded',o)});
+  document.getElementById('mlist').addEventListener('click',function(e){var b=e.target.closest('.mrow');if(!b)return;
+    setM(M.filter(function(m){return m.k===b.dataset.k})[0]);document.getElementById('pick').classList.remove('open');document.getElementById('tag').setAttribute('aria-expanded',false)});
+  function tick(){var n=new Date(),e=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1),s=Math.floor((e-n)/1000);
+    document.getElementById('rst').textContent='Resets in '+Math.floor(s/3600)+'h '+Math.floor(s%3600/60)+'m '+s%60+'s'}
+  function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(function(){t.classList.remove('show')},2200)}
+  list.addEventListener('click',function(e){
+    var b=e.target.closest('.act');if(!b||b.disabled)return;var q=data[tab][+b.dataset.i];
+    if(q.p>=q.g){q.claimed=true;gems+=q.r;qp=Math.min(20,qp+1);document.getElementById('gn').textContent=gems;var g=document.getElementById('gems');g.classList.add('bump');setTimeout(function(){g.classList.remove('bump')},300);mon();toast('+'+q.r+' gems · +1 quest point')}
+    else{q.p=Math.min(q.g,q.p+(q.g>10?Math.ceil(q.g/4):1));toast('Progress: '+q.p+'/'+q.g)}
+    render();
+  });
+  document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){tab=t.dataset.t;document.querySelectorAll('.tab').forEach(function(x){x.classList.toggle('on',x===t)});render()})});
+  render();mon();fx(sel);tick();setInterval(tick,1000);
+})();
+</script>
+</body>
+</html>

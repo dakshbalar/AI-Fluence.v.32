@@ -1,0 +1,6 @@
+{
+  "name": "AI Fluence",
+  "description": "The premier AI tools and engineering training platform. Master DSA, Generative AI, and AI for Everyone through interactive learning, playing, and building.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

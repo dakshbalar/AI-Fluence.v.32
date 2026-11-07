@@ -1,0 +1,196 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper to check if user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper to check if user is operating on their own document
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // 1. User Profile rules
+    match /users/{userId} {
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow read: if isSignedIn(); // Allow reading other user documents to display on XP Leaderboards
+      allow update, delete: if isOwner(userId);
+
+      match /vocabulary/{vocabId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /progress/{progressId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // 1.1 Dedicated User Stats rules
+    match /userStats/{userId} {
+      allow create, read, update: if isSignedIn();
+    }
+
+    // 2. Level Progress
+    match /levelProgress/{progressId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 3. Friendships
+    match /friendships/{friendshipId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 4. Friend Requests
+    match /friendRequests/{requestId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 5. User Achievements
+    match /userAchievements/{achievementId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 6. User Inventory
+    match /userInventory/{inventoryId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 7. Reward Transactions
+    match /rewardTransactions/{txId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 8. User Quests
+    match /userQuests/{questId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 9. Clans
+    match /clans/{clanId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 10. Clan Members
+    match /clanMembers/{memberId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 11. Enrollments
+    match /enrollments/{enrollmentId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 12. User Referral Codes
+    match /userCodes/{code} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 13. Test Connection
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+
+    // 14. Bootcamp Registrations
+    match /bootcampRegistrations/{regId} {
+      allow create: if true;
+      allow read, update: if isSignedIn();
+    }
+
+    // 15. Daily Quests Pool
+    match /daily_quests/{questId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 16. Student Daily Quests Assignments
+    match /student_daily_quests/{docId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 17. Daily Activity Tracking
+    match /daily_activity/{docId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 18. Student Streaks
+    match /student_streaks/{userId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 19. Student Monthly Quests
+    match /student_monthly_quests/{docId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 20. User Lives & Energy System
+    match /user_lives/{userId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 21. Life Transactions Log
+    match /life_transactions/{txId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 22. Ad Rewards Log
+    match /ad_rewards/{rewardId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 23. Level Entry Authorizations
+    match /level_entries/{entryId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 24. Cloud-Synced Course Progress
+    match /user_course_progress/{docId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 25. Cloud Code Snippets Vault
+    match /user_code_snippets/{userId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 26. User Achievements Registry
+    match /user_achievements/{userId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 27. Quiz Attempt Analytics
+    match /user_quiz_attempts/{attemptId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 28. Real-Time Clan Messages
+    match /clan_messages/{msgId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 29. Seasonal Tournaments
+    match /seasonal_tournaments/{tournamentId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 30. Spaced Repetition Flashcards
+    match /user_spaced_repetition/{userId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 31. In-App Notifications
+    match /user_notifications/{notifId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 32. Interview Session Logs
+    match /user_interview_sessions/{sessionId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 33. Student Learning Telemetry Events
+    match /user_telemetry_events/{eventId} {
+      allow read, write: if isSignedIn();
+    }
+  }
+}
+

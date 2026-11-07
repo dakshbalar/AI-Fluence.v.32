@@ -1,0 +1,176 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with gamification stats, equipped items, and user code",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "userCode": { "type": "string", "pattern": "^AIF-[A-Z0-9]{4,8}$", "maxLength": 16 },
+        "playerName": { "type": "string", "maxLength": 64 },
+        "displayName": { "type": "string", "maxLength": 64 },
+        "email": { "type": "string", "maxLength": 128 },
+        "avatarId": { "type": "string", "maxLength": 64 },
+        "xp": { "type": "number" },
+        "diamonds": { "type": "number" },
+        "plays": { "type": "number" },
+        "trophies": { "type": "number" },
+        "currentLeagueId": { "type": "string", "maxLength": 64 },
+        "currentClanId": { "type": "string", "maxLength": 64 },
+        "streak": { "type": "number" },
+        "experienceLevel": { "type": "string", "maxLength": 32 }
+      },
+      "required": ["uid", "userCode"]
+    },
+    "UserCode": {
+      "title": "UserCode",
+      "description": "Unique user code mapping for collision-free lookup",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "userCode": { "type": "string", "maxLength": 16 }
+      },
+      "required": ["uid", "userCode"]
+    },
+    "Enrollment": {
+      "title": "Enrollment",
+      "description": "Course questionnaire and enrollment records",
+      "type": "object",
+      "properties": {
+        "enrollmentId": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "courseId": { "type": "string", "maxLength": 64 },
+        "questionnaireVersion": { "type": "string", "maxLength": 16 }
+      },
+      "required": ["userId", "courseId"]
+    },
+    "LevelProgress": {
+      "title": "LevelProgress",
+      "description": "Per-level completion, stars, and mistake history",
+      "type": "object",
+      "properties": {
+        "progressId": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "levelId": { "type": "string", "maxLength": 64 },
+        "completed": { "type": "boolean" },
+        "bestStars": { "type": "number" },
+        "latestStars": { "type": "number" },
+        "attemptsCount": { "type": "number" },
+        "totalMistakes": { "type": "number" }
+      },
+      "required": ["userId", "levelId", "completed"]
+    },
+    "RewardTransaction": {
+      "title": "RewardTransaction",
+      "description": "Ledger of rewards awarded to prevent double-claiming",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "rewardType": { "type": "string", "enum": ["xp", "diamonds", "plays", "trophies"] },
+        "amount": { "type": "number" },
+        "source": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["userId", "rewardType", "amount", "source"]
+    },
+    "FriendRequest": {
+      "title": "FriendRequest",
+      "description": "Friend requests sent between users",
+      "type": "object",
+      "properties": {
+        "senderUid": { "type": "string", "maxLength": 128 },
+        "senderCode": { "type": "string", "maxLength": 16 },
+        "receiverUid": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["pending", "accepted", "rejected"] }
+      },
+      "required": ["senderUid", "receiverUid", "status"]
+    },
+    "Friendship": {
+      "title": "Friendship",
+      "description": "Mutual connection between two users",
+      "type": "object",
+      "properties": {
+        "user1Uid": { "type": "string", "maxLength": 128 },
+        "user2Uid": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["user1Uid", "user2Uid"]
+    },
+    "UserAchievement": {
+      "title": "UserAchievement",
+      "description": "Unlocked gamified achievements",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "achievementId": { "type": "string", "maxLength": 64 },
+        "progress": { "type": "number" }
+      },
+      "required": ["userId", "achievementId"]
+    },
+    "UserInventory": {
+      "title": "UserInventory",
+      "description": "Purchased store items and avatar equipment",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "itemId": { "type": "string", "maxLength": 64 },
+        "equipped": { "type": "boolean" }
+      },
+      "required": ["userId", "itemId"]
+    },
+    "UserQuest": {
+      "title": "UserQuest",
+      "description": "Daily/weekly quest tracking",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "questId": { "type": "string", "maxLength": 64 },
+        "progress": { "type": "number" },
+        "target": { "type": "number" },
+        "completed": { "type": "boolean" },
+        "claimed": { "type": "boolean" }
+      },
+      "required": ["userId", "questId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles and gamified progression state"
+    },
+    "/userCodes/{userCode}": {
+      "schema": "UserCode",
+      "description": "Unique user code directory"
+    },
+    "/enrollments/{enrollmentId}": {
+      "schema": "Enrollment",
+      "description": "Course questionnaire responses"
+    },
+    "/levelProgress/{progressId}": {
+      "schema": "LevelProgress",
+      "description": "Per-level progress and star records"
+    },
+    "/rewardTransactions/{transactionId}": {
+      "schema": "RewardTransaction",
+      "description": "Ledger of awarded XP and diamonds"
+    },
+    "/friendRequests/{requestId}": {
+      "schema": "FriendRequest",
+      "description": "Pending and resolved friend requests"
+    },
+    "/friendships/{friendshipId}": {
+      "schema": "Friendship",
+      "description": "Confirmed friend pairings"
+    },
+    "/userAchievements/{achievementDocId}": {
+      "schema": "UserAchievement",
+      "description": "User unlocked achievements"
+    },
+    "/userInventory/{inventoryDocId}": {
+      "schema": "UserInventory",
+      "description": "User items and avatar skins"
+    },
+    "/userQuests/{questDocId}": {
+      "schema": "UserQuest",
+      "description": "User daily quest completions"
+    }
+  }
+}

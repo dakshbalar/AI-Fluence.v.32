@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --font-pixel: 'Press Start 2P', monospace;
+}
+
+.font-pixel {
+  font-family: 'Press Start 2P', monospace;
+}
+
+.pixel-text-shadow {
+  text-shadow: 2.5px 2.5px 0px #000000, 3px 3px 0px #000000;
+}
+
+.pixel-text-glow {
+  text-shadow: 2px 2px 0px #000000, 0 0 8px rgba(0, 229, 255, 0.6);
+}

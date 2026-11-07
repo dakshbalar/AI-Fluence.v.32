@@ -1,0 +1,19 @@
+[
+  {
+    "registrationId": "AIP-2026-DIWALI1",
+    "registrationDate": "23/10/2026",
+    "registrationTime": "10:15:00 AM",
+    "parentName": "Amit Sharma",
+    "parentContact": "+91 9876543210",
+    "parentEmail": "amit.sharma@example.com",
+    "studentName": "Rohan Sharma",
+    "studentContact": "+91 9876543211",
+    "schoolName": "Delhi Public School (R.K. Puram)",
+    "standard": "Standard 8",
+    "institute": "Delhi Public School (DPS)",
+    "registrationStatus": "Registered",
+    "source": "AI Fluence Website",
+    "paymentStatus": "Verified / Free",
+    "createdAt": "2026-10-23T04:45:00.000Z"
+  }
+]

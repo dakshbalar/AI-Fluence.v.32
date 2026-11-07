@@ -1,0 +1,225 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="100%" height="100%">
+    
+    <defs>
+      <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#070913" />
+        <stop offset="40%" stop-color="#0b1122" />
+        <stop offset="80%" stop-color="#090d1a" />
+        <stop offset="100%" stop-color="#050811" />
+      </linearGradient>
+      
+      <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#06b6d4" />
+        <stop offset="50%" stop-color="#3b82f6" />
+        <stop offset="100%" stop-color="#8b5cf6" />
+      </linearGradient>
+
+      <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#06b6d4" />
+        <stop offset="100%" stop-color="#3b82f6" />
+      </linearGradient>
+
+      <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#8b5cf6" />
+        <stop offset="100%" stop-color="#ec4899" />
+      </linearGradient>
+
+      <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#f59e0b" />
+        <stop offset="100%" stop-color="#fbbf24" />
+      </linearGradient>
+
+      <pattern id="dotGrid" x="0" y="0" width="36" height="36" patternUnits="userSpaceOnUse">
+        <circle cx="2" cy="2" r="1.5" fill="#38bdf8" fill-opacity="0.12" />
+      </pattern>
+
+      <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="25" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+
+      <filter id="neon" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="10" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    
+    
+    <!-- Background Canvas -->
+    <rect width="1080" height="1920" fill="url(#bgGrad)" />
+    <rect width="1080" height="1920" fill="url(#dotGrid)" />
+
+    <!-- Ambient Glow Orbs -->
+    <circle cx="200" cy="300" r="300" fill="#3b82f6" fill-opacity="0.22" filter="url(#glow)" />
+    <circle cx="900" cy="800" r="350" fill="#8b5cf6" fill-opacity="0.20" filter="url(#glow)" />
+    <circle cx="300" cy="1400" r="320" fill="#06b6d4" fill-opacity="0.18" filter="url(#glow)" />
+
+    <!-- Isometric Grid Floor at bottom -->
+    <g opacity="0.25" stroke="#38bdf8" stroke-width="1.2">
+      <line x1="0" y1="1720" x2="1080" y2="1720" />
+      <line x1="0" y1="1800" x2="1080" y2="1800" />
+      <line x1="0" y1="1880" x2="1080" y2="1880" />
+      <line x1="200" y1="1680" x2="0" y2="1920" />
+      <line x1="540" y1="1680" x2="540" y2="1920" />
+      <line x1="880" y1="1680" x2="1080" y2="1920" />
+    </g>
+
+    <!-- Top Status Bar (y=60) -->
+    <g transform="translate(60, 60)">
+      <rect width="960" height="84" rx="24" fill="#0c1224" fill-opacity="0.9" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" />
+      
+      <!-- Brand icon -->
+      <rect x="20" y="16" width="52" height="52" rx="16" fill="url(#cyanGrad)" />
+      <path d="M46 28 L57 44 L35 44 Z" fill="#ffffff" />
+      <circle cx="46" cy="56" r="3.5" fill="#ffffff" />
+      
+      <text x="88" y="48" fill="#ffffff" font-family="system-ui, sans-serif" font-weight="900" font-size="24" letter-spacing="1">A.I. FLUENCE</text>
+      <text x="88" y="68" fill="#38bdf8" font-family="system-ui, sans-serif" font-weight="800" font-size="11" letter-spacing="2">EDITION 2026</text>
+
+      <!-- Badges -->
+      <g transform="translate(600, 20)">
+        <rect width="150" height="44" rx="14" fill="#1e293b" stroke="#f97316" stroke-width="1.5" stroke-opacity="0.6" />
+        <text x="18" y="29" font-size="20">🔥</text>
+        <text x="48" y="28" fill="#fb923c" font-family="monospace" font-weight="900" font-size="15">14 DAYS</text>
+
+        <rect x="165" y="0" width="160" height="44" rx="14" fill="url(#purpleGrad)" />
+        <text x="182" y="29" font-size="18">🏆</text>
+        <text x="212" y="28" fill="#ffffff" font-family="system-ui, sans-serif" font-weight="900" font-size="13">CHAMPION</text>
+      </g>
+    </g>
+
+    <!-- Hero Title & Mission Tagline (y=180 to 420) -->
+    <g transform="translate(60, 180)">
+      <rect width="250" height="38" rx="12" fill="#3b82f6" fill-opacity="0.18" stroke="#3b82f6" stroke-width="1.2" />
+      <text x="125" y="25" fill="#60a5fa" font-family="system-ui, sans-serif" font-weight="900" font-size="13" letter-spacing="2" text-anchor="middle">NEXT-GEN LEARNING GAME</text>
+
+      <text x="0" y="105" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="64" letter-spacing="-1">Learn. Play. Build.</text>
+      <text x="0" y="165" fill="#38bdf8" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="52" letter-spacing="-1">Master AI &amp; Code.</text>
+
+      <text x="0" y="215" fill="#94a3b8" font-family="system-ui, sans-serif" font-weight="500" font-size="22">Turn dry textbooks into an epic RPG coding quest with real-time AI.</text>
+    </g>
+
+    <!-- Central Interactive Game Console Canvas (y=440 to 1280) -->
+    <g transform="translate(60, 440)">
+      <!-- Console Container Frame -->
+      <rect width="960" height="840" rx="32" fill="#090e1c" fill-opacity="0.95" stroke="url(#heroGrad)" stroke-width="2.5" />
+      
+      <!-- Console Header Bar -->
+      <rect width="960" height="60" rx="32 32 0 0" fill="#0e1529" />
+      <circle cx="36" cy="30" r="8" fill="#ef4444" />
+      <circle cx="62" cy="30" r="8" fill="#f59e0b" />
+      <circle cx="88" cy="30" r="8" fill="#10b981" />
+      <text x="120" y="36" fill="#94a3b8" font-family="monospace" font-size="16">mission_control.py — A.I. Fluence Engine</text>
+      <rect x="760" y="14" width="165" height="32" rx="10" fill="#1e293b" stroke="#3b82f6" stroke-width="1" />
+      <text x="842" y="35" fill="#38bdf8" font-family="monospace" font-weight="bold" font-size="12" text-anchor="middle">LIVE SESSION</text>
+
+      <!-- Central Visual: Gamified Winding Map Inside Console -->
+      <g transform="translate(40, 90)">
+        <rect width="880" height="340" rx="20" fill="#060913" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
+        
+        <!-- Winding Trail -->
+        <path d="M 80 260 Q 240 140 440 210 T 780 110" fill="none" stroke="url(#cyanGrad)" stroke-width="8" stroke-dasharray="14 14" stroke-linecap="round" />
+        
+        <!-- Node 1: Completed -->
+        <circle cx="80" cy="260" r="30" fill="#10b981" />
+        <text x="80" y="268" fill="#fff" font-size="20" font-weight="bold" text-anchor="middle">✓</text>
+        <text x="80" y="315" fill="#a7f3d0" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">Variables &amp; Loops</text>
+
+        <!-- Node 2: Completed -->
+        <circle cx="280" cy="170" r="30" fill="#3b82f6" />
+        <text x="280" y="178" fill="#fff" font-size="20" font-weight="bold" text-anchor="middle">✓</text>
+        <text x="280" y="225" fill="#93c5fd" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">Binary Trees</text>
+
+        <!-- Node 3: Current / Active -->
+        <circle cx="500" cy="200" r="38" fill="url(#purpleGrad)" />
+        <circle cx="500" cy="200" r="50" fill="none" stroke="#ec4899" stroke-width="3" stroke-dasharray="6 6" />
+        <text x="500" y="210" fill="#fff" font-size="26" font-weight="bold" text-anchor="middle">⚡</text>
+        <text x="500" y="275" fill="#f472b6" font-family="sans-serif" font-weight="bold" font-size="15" text-anchor="middle">Transformers [Active]</text>
+
+        <!-- Node 4: Boss Citadel -->
+        <rect x="730" y="60" width="100" height="100" rx="22" fill="#1e1b4b" stroke="#facc15" stroke-width="3" />
+        <text x="780" y="120" font-size="40" text-anchor="middle">👑</text>
+        <text x="780" y="185" fill="#facc15" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">Boss Citadel</text>
+      </g>
+
+      <!-- Code Execution & Output Terminal (y=460) -->
+      <g transform="translate(40, 460)">
+        <rect width="880" height="230" rx="20" fill="#040711" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.3" />
+        <rect x="0" y="0" width="880" height="42" rx="20 20 0 0" fill="#090f1f" />
+        <text x="24" y="27" fill="#64748b" font-family="monospace" font-size="13">TERMINAL OUTPUT — GCC 14.2 / PYTHON 3.12</text>
+        
+        <g transform="translate(24, 70)" font-family="monospace" font-size="16">
+          <text x="0" y="0" fill="#10b981">● All 15 Test Cases Passed! Execution: 12ms</text>
+          <text x="0" y="32" fill="#e2e8f0">def attention(Q, K, V):</text>
+          <text x="32" y="64" fill="#94a3b8">scores = matmul(Q, K.T) / sqrt(d_k)</text>
+          <text x="32" y="96" fill="#60a5fa">return softmax(scores) @ V  # Perfect O(N^2)</text>
+          <text x="0" y="130" fill="#facc15">★ +120 XP Earned! Streak Multiplier: 1.5x</text>
+        </g>
+      </g>
+
+      <!-- AI Coach Pill Inside Console -->
+      <g transform="translate(40, 720)">
+        <rect width="880" height="88" rx="20" fill="#0f172a" stroke="#818cf8" stroke-width="1.5" />
+        <rect x="20" y="18" width="52" height="52" rx="14" fill="url(#purpleGrad)" />
+        <text x="46" y="53" font-size="26" text-anchor="middle">🤖</text>
+        <text x="88" y="42" fill="#ffffff" font-family="system-ui, sans-serif" font-weight="bold" font-size="16">Lumi AI Copilot:</text>
+        <text x="88" y="64" fill="#cbd5e1" font-family="system-ui, sans-serif" font-size="15">"Spot-on implementation! Your attention matrix handles causal masking flawlessly."</text>
+      </g>
+    </g>
+
+    <!-- 4 Track Highlights Pills (y=1310 to 1530) -->
+    <g transform="translate(60, 1310)">
+      <rect width="960" height="200" rx="28" fill="#0c1222" fill-opacity="0.9" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" />
+      
+      <text x="40" y="44" fill="#38bdf8" font-family="system-ui, sans-serif" font-weight="900" font-size="13" letter-spacing="1.5">INDUSTRY-STANDARD TRACKS</text>
+      
+      <g transform="translate(40, 70)">
+        <!-- Box 1 -->
+        <rect width="200" height="95" rx="18" fill="#131b2e" stroke="#0284c7" stroke-width="1" />
+        <text x="20" y="40" font-size="24">🤖</text>
+        <text x="60" y="38" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="16">Gen AI</text>
+        <text x="20" y="72" fill="#94a3b8" font-family="sans-serif" font-size="13">LLMs &amp; Agents</text>
+
+        <!-- Box 2 -->
+        <rect x="220" y="0" width="200" height="95" rx="18" fill="#131b2e" stroke="#7c3aed" stroke-width="1" />
+        <text x="240" y="40" font-size="24">⚡</text>
+        <text x="280" y="38" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="16">DSA</text>
+        <text x="240" y="72" fill="#94a3b8" font-family="sans-serif" font-size="13">Algorithms &amp; Big-O</text>
+
+        <!-- Box 3 -->
+        <rect x="440" y="0" width="200" height="95" rx="18" fill="#131b2e" stroke="#059669" stroke-width="1" />
+        <text x="460" y="40" font-size="24">🌐</text>
+        <text x="500" y="38" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="16">Web Dev</text>
+        <text x="460" y="72" fill="#94a3b8" font-family="sans-serif" font-size="13">Full Stack Core</text>
+
+        <!-- Box 4 -->
+        <rect x="660" y="0" width="220" height="95" rx="18" fill="#131b2e" stroke="#ea580c" stroke-width="1" />
+        <text x="680" y="40" font-size="24">🛡️</text>
+        <text x="720" y="38" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="16">Clans</text>
+        <text x="680" y="72" fill="#94a3b8" font-family="sans-serif" font-size="13">Multiplayer Leagues</text>
+      </g>
+    </g>
+
+    <!-- Bottom Feature Count & Badge (y=1540 to 1840) -->
+    <g transform="translate(60, 1540)">
+      <rect width="960" height="260" rx="32" fill="url(#heroGrad)" />
+      
+      <g transform="translate(40, 50)">
+        <rect width="180" height="34" rx="10" fill="#ffffff" fill-opacity="0.2" />
+        <text x="90" y="23" fill="#ffffff" font-family="system-ui, sans-serif" font-weight="900" font-size="12" letter-spacing="1.5" text-anchor="middle">COMPLETE PLATFORM</text>
+        
+        <text x="0" y="95" fill="#ffffff" font-family="system-ui, sans-serif" font-weight="900" font-size="44">15 Interactive Systems</text>
+        <text x="0" y="140" fill="#e0e7ff" font-family="system-ui, sans-serif" font-weight="600" font-size="22">Scroll down to explore all 15 game features in full screen.</text>
+        
+        <rect x="0" y="165" width="280" height="50" rx="16" fill="#ffffff" />
+        <text x="140" y="197" fill="#1e1b4b" font-family="system-ui, sans-serif" font-weight="900" font-size="16" letter-spacing="1" text-anchor="middle">START LEARNING FREE ➔</text>
+      </g>
+    </g>
+
+</svg>

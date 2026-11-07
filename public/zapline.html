@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zapline — Trade Smarter, Faster, Safer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* CSS Reset & Variables */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #000000;
+      --text: #f7f7f8;
+      --muted: #8b8988;
+      --violet: #9312ff;
+      --violet-btn-1: #a020ff;
+      --violet-btn-2: #7a1cf8;
+      --green: #45b558;
+      --red: #f03b2a;
+      --panel-border: rgba(147, 18, 255, 0.4);
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Starfield Canvas Background across entire viewport */
+    #star-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Return banner to AI Fluence */
+    .back-nav {
+      position: fixed;
+      top: 14px;
+      left: 18px;
+      z-index: 100;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 600;
+      text-decoration: none;
+      backdrop-filter: blur(12px);
+      transition: all 0.2s ease;
+    }
+    .back-nav:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: var(--violet);
+      box-shadow: 0 0 15px rgba(147, 18, 255, 0.4);
+    }
+
+    /* Desktop Design Stage: 1672 x 941 scaled by s = min(vw/1672, vh/941) */
+    .stage-wrapper {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .design-stage {
+      position: absolute;
+      width: 1672px;
+      height: 941px;
+      left: 50%;
+      top: 50%;
+      transform-origin: center center;
+      overflow: hidden;
+    }
+
+    /* Top Sky Video & Canvas Fallback (1672 x 717) */
+    .sky-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1672px;
+      height: 717px;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 5;
+    }
+
+    #fallback-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1672px;
+      height: 717px;
+      transition: opacity 0.8s ease;
+    }
+
+    #glow-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1672px;
+      height: 717px;
+      object-fit: cover;
+      mix-blend-mode: screen;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    #glow-video.loaded {
+      opacity: 1;
+    }
+
+    /* Navigation (Left logo, Centered Menu, Right button) */
+    .nav {
+      position: absolute;
+      top: 36px;
+      left: 116px;
+      right: 116px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 30;
+      animation: fadeInDown 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--violet-btn-1), var(--violet-btn-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 16px rgba(147, 18, 255, 0.6);
+    }
+
+    .logo-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: #fff;
+    }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(10, 10, 15, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .nav-menu a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 4px 10px;
+      transition: color 0.2s ease;
+    }
+    .nav-menu a:hover {
+      color: var(--text);
+    }
+    .nav-menu a.active {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 9999px;
+      padding: 4px 12px;
+    }
+    .nav-sep {
+      color: rgba(255, 255, 255, 0.2);
+      font-size: 12px;
+    }
+
+    .btn-violet {
+      background: linear-gradient(135deg, var(--violet-btn-1), var(--violet-btn-2));
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 10px 22px;
+      border-radius: 9999px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 0 16px rgba(147, 18, 255, 0.4);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-violet:hover {
+      box-shadow: 0 0 28px rgba(147, 18, 255, 0.8), 0 0 50px rgba(160, 32, 255, 0.4);
+      filter: brightness(1.15);
+      transform: translateY(-1px);
+    }
+
+    .btn-dark {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text);
+      font-weight: 500;
+      font-size: 13px;
+      padding: 10px 22px;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-dark:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(160, 32, 255, 0.5);
+      box-shadow: 0 0 18px rgba(147, 18, 255, 0.25);
+    }
+
+    /* Hero Center Stage */
+    .hero-center {
+      position: absolute;
+      top: 140px;
+      left: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      z-index: 20;
+    }
+
+    .headline {
+      font-size: 84px;
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+      max-width: 1200px;
+      opacity: 0;
+      animation: wipeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+    }
+
+    .headline-gradient {
+      background: linear-gradient(135deg, #e9d5ff 0%, #c084fc 40%, #9312ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 30px rgba(160, 32, 255, 0.4));
+    }
+
+    .lede {
+      font-size: 17px;
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 780px;
+      margin-top: 20px;
+      opacity: 0;
+      animation: wipeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+    }
+
+    .hero-buttons {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 32px;
+      opacity: 0;
+      animation: wipeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.45s forwards;
+    }
+
+    .hero-buttons .btn-violet {
+      font-size: 15px;
+      padding: 14px 34px;
+    }
+
+    .hero-buttons .btn-dark {
+      font-size: 15px;
+      padding: 14px 32px;
+    }
+
+    /* Dashboard glow strip image */
+    .dashboard-glow-strip {
+      position: absolute;
+      top: 610px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1260px;
+      height: 90px;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      z-index: 24;
+      opacity: 0.9;
+    }
+    .dashboard-glow-strip img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Dashboard Panel (1204px wide, y = 651, rounded 14px) */
+    .dashboard-panel {
+      position: absolute;
+      top: 651px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1204px;
+      height: 330px;
+      border-radius: 14px;
+      background: rgba(7, 7, 11, 0.92);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(28px);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95);
+      overflow: hidden;
+      z-index: 25;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      animation: riseDashboard 1s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards;
+    }
+
+    /* Glowing violet line along top edge */
+    .violet-lightline {
+      width: 100%;
+      height: 1.5px;
+      background: linear-gradient(90deg, transparent 0%, #a020ff 50%, transparent 100%);
+      box-shadow: 0 0 15px #9312ff, 0 0 30px rgba(160, 32, 255, 0.5);
+      animation: pulseLine 3s infinite ease-in-out;
+      flex-shrink: 0;
+    }
+
+    .panel-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .panel-sidebar {
+      width: 220px;
+      background: rgba(3, 3, 6, 0.92);
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 12px;
+    }
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .sidebar-brand svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--violet-btn-1);
+    }
+    .gear-btn {
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .gear-btn:hover {
+      color: #fff;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .nav-item:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .nav-item.active {
+      background: rgba(147, 18, 255, 0.18);
+      border: 1px solid rgba(147, 18, 255, 0.4);
+      color: #fff;
+      box-shadow: 0 0 14px rgba(147, 18, 255, 0.25);
+    }
+
+    .sidebar-pro {
+      padding: 10px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(147, 18, 255, 0.12), transparent);
+      border: 1px solid rgba(147, 18, 255, 0.3);
+    }
+    .sidebar-pro-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 3px;
+    }
+    .sidebar-pro-desc {
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    .btn-upgrade {
+      width: 100%;
+      padding: 5px;
+      border-radius: 6px;
+      border: none;
+      background: linear-gradient(135deg, var(--violet-btn-1), var(--violet-btn-2));
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Main Dashboard View */
+    .panel-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: rgba(7, 7, 12, 0.6);
+    }
+
+    .panel-topbar {
+      height: 44px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .feed-tag {
+      font-size: 10px;
+      font-family: monospace;
+      color: var(--green);
+      background: rgba(69, 181, 88, 0.1);
+      border: 1px solid rgba(69, 181, 88, 0.25);
+      padding: 2px 8px;
+      border-radius: 9999px;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 12px;
+    }
+    .user-avatar {
+      width: 20px;
+      height: 20px;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, var(--violet), #c084fc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .user-addr {
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .panel-grid {
+      flex: 1;
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: 3.8fr 5fr 3.2fr;
+      gap: 16px;
+      overflow: hidden;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .stat-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .stat-number {
+      font-size: 22px;
+      font-weight: 700;
+      font-family: monospace;
+      color: #fff;
+    }
+    .badge-pos {
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 700;
+      font-family: monospace;
+    }
+    .badge-neg {
+      color: var(--red);
+      font-size: 11px;
+      font-weight: 700;
+      font-family: monospace;
+    }
+
+    .chart-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .chart-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .cal-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: 11px;
+    }
+    .cal-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 3px 0;
+    }
+    .cal-label {
+      color: var(--muted);
+    }
+    .cal-val {
+      font-family: monospace;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Keyframes */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes wipeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes riseDashboard {
+      from { opacity: 0; transform: translate(-50%, 50px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    @keyframes pulseLine {
+      0%, 100% { opacity: 0.85; box-shadow: 0 0 15px #9312ff, 0 0 30px rgba(160, 32, 255, 0.5); }
+      50% { opacity: 1; box-shadow: 0 0 25px #c084fc, 0 0 45px rgba(147, 18, 255, 0.8); }
+    }
+
+    /* Mobile Responsive (< 900px or portrait) */
+    @media (max-width: 899px) {
+      .stage-wrapper {
+        display: none;
+      }
+      .mobile-view {
+        display: flex;
+        flex-direction: column;
+        padding: 60px 16px 40px;
+        position: relative;
+        z-index: 10;
+      }
+      .mobile-sky {
+        width: 100%;
+        height: 200px;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--panel-border);
+        position: relative;
+        margin-bottom: 24px;
+      }
+      .mobile-sky canvas {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .mobile-headline {
+        font-size: 38px;
+        font-weight: 800;
+        line-height: 1.1;
+        text-align: center;
+        letter-spacing: -0.03em;
+      }
+      .mobile-lede {
+        font-size: 14px;
+        color: var(--muted);
+        text-align: center;
+        margin-top: 14px;
+        line-height: 1.5;
+      }
+      .mobile-btns {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 24px;
+      }
+      .mobile-btns button {
+        width: 100%;
+        padding: 12px;
+      }
+      .mobile-panel {
+        margin-top: 32px;
+        background: rgba(7, 7, 11, 0.95);
+        border: 1px solid var(--panel-border);
+        border-radius: 16px;
+        padding: 16px;
+      }
+      .mobile-chips {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        margin-bottom: 16px;
+      }
+      .chip {
+        padding: 5px 12px;
+        border-radius: 9999px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--muted);
+      }
+      .chip.active {
+        background: rgba(147, 18, 255, 0.25);
+        border: 1px solid rgba(147, 18, 255, 0.4);
+        color: #fff;
+      }
+    }
+
+    @media (min-width: 900px) {
+      .mobile-view {
+        display: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .nav, .headline, .lede, .hero-buttons, .dashboard-panel {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: translate(-50%, 0) !important;
+      }
+      #glow-video {
+        display: none !important;
+      }
+      #fallback-canvas {
+        opacity: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Return Back to AI Fluence link -->
+  <a href="/" class="back-nav">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m15 18-6-6 6-6"/>
+    </svg>
+    <span>AI Fluence</span>
+  </a>
+
+  <!-- Global Procedural Stars Canvas (Sky layer) -->
+  <canvas id="star-canvas"></canvas>
+
+  <!-- DESKTOP STAGE (>= 900px): Centered 1672x941 frame -->
+  <div class="stage-wrapper">
+    <div class="design-stage" id="design-stage">
+      <!-- Glow Sky Container: Video with canvas fallback -->
+      <div class="sky-container">
+        <canvas id="fallback-canvas" width="1672" height="717"></canvas>
+        <video 
+          id="glow-video" 
+          src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/e859f229-8ebd-43fb-a5a0-58006ba75327.mp4" 
+          autoplay 
+          muted 
+          loop 
+          playsinline
+        ></video>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="nav">
+        <a href="#" class="nav-logo">
+          <div class="logo-icon">
+            <svg viewBox="0 0 24 24">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <span class="logo-text">Zapline</span>
+        </a>
+
+        <div class="nav-menu">
+          <a href="#" class="active">Home</a>
+          <span class="nav-sep">·</span>
+          <a href="#">Features</a>
+          <span class="nav-sep">·</span>
+          <a href="#">Zapline Advantage</a>
+          <span class="nav-sep">·</span>
+          <a href="#">Referral</a>
+          <span class="nav-sep">·</span>
+          <a href="#">FAQ</a>
+        </div>
+
+        <div>
+          <button class="btn-violet">Get Started</button>
+        </div>
+      </nav>
+
+      <!-- Hero Center -->
+      <div class="hero-center">
+        <h1 class="headline">
+          <span class="headline-gradient">Zapline</span> Trade Smarter,<br />Faster, Safer.
+        </h1>
+        <p class="lede">
+          The first fully integrated on-chain trading experience. No dashboards, no delays — Zapline empowers you<br />
+          to trade directly from your favorite DeFi apps and terminals.
+        </p>
+        <div class="hero-buttons">
+          <button class="btn-violet">Get Started</button>
+          <button class="btn-dark">Learn More</button>
+        </div>
+      </div>
+
+      <!-- Dashboard glow strip -->
+      <div class="dashboard-glow-strip">
+        <img src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/e0e14572-12e1-4c08-b471-a21521844945.png" alt="Dashboard Glow" />
+      </div>
+
+      <!-- Dashboard Panel (1204px wide, y = 651) -->
+      <div class="dashboard-panel">
+        <div class="violet-lightline"></div>
+        <div class="panel-body">
+          <!-- Sidebar -->
+          <div class="panel-sidebar">
+            <div>
+              <div class="sidebar-header">
+                <div class="sidebar-brand">
+                  <svg viewBox="0 0 24 24">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                  </svg>
+                  <span>Zapline</span>
+                </div>
+                <span class="gear-btn">⚙</span>
+              </div>
+
+              <div class="sidebar-nav">
+                <a class="nav-item">
+                  <span>🔍</span>
+                  <span>Search</span>
+                </a>
+                <a class="nav-item active">
+                  <span>📊</span>
+                  <span>Dashboard</span>
+                </a>
+                <a class="nav-item">
+                  <span>🎯</span>
+                  <span>Snipes</span>
+                </a>
+                <a class="nav-item">
+                  <span>⏏</span>
+                  <span>Disconnect</span>
+                </a>
+              </div>
+
+              <div class="sidebar-nav" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06);">
+                <a class="nav-item">
+                  <span>💼</span>
+                  <span>Wallets</span>
+                </a>
+                <a class="nav-item">
+                  <span>🤝</span>
+                  <span>Referral</span>
+                </a>
+                <a class="nav-item">
+                  <span>⚙</span>
+                  <span>Settings</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Pro Promo Card -->
+            <div class="sidebar-pro">
+              <div class="sidebar-pro-title">✨ Zapline Pro</div>
+              <div class="sidebar-pro-desc">0ms mempool execution & priority snipes.</div>
+              <button class="btn-upgrade">Upgrade</button>
+            </div>
+          </div>
+
+          <!-- Main Dashboard Area -->
+          <div class="panel-main">
+            <!-- Top bar -->
+            <div class="panel-topbar">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 12px; font-weight: 600;">Live Feed</span>
+                <span class="feed-tag">● RPC ACTIVE</span>
+              </div>
+              <div class="user-pill">
+                <div class="user-avatar">A</div>
+                <span style="font-weight: 500;">Alex T.</span>
+                <span class="user-addr">0x3f4…9c7e</span>
+              </div>
+            </div>
+
+            <!-- Grid: Stats + Chart + Calendar -->
+            <div class="panel-grid">
+              <!-- Left stats -->
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="stat-card">
+                  <span class="stat-label">Revenue generated (since inception)</span>
+                  <div class="stat-value-row">
+                    <span class="stat-number">214,402</span>
+                    <span class="badge-pos">+12.5%</span>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-label">Active wallets/users</span>
+                  <div class="stat-value-row">
+                    <span class="stat-number">6412</span>
+                    <span class="badge-neg">−3.1%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Center Chart -->
+              <div class="chart-card">
+                <div class="chart-title-row">
+                  <span>Daily dynamics of sales</span>
+                  <span style="font-size: 10px; color: var(--muted); font-family: monospace;">Past 30 Days</span>
+                </div>
+                <!-- Area Chart SVG -->
+                <div style="height: 125px; width: 100%;">
+                  <svg viewBox="0 0 320 120" style="width: 100%; height: 100%;">
+                    <defs>
+                      <linearGradient id="svgGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#9312ff" stop-opacity="0.45" />
+                        <stop offset="85%" stop-color="#9312ff" stop-opacity="0.02" />
+                        <stop offset="100%" stop-color="#9312ff" stop-opacity="0" />
+                      </linearGradient>
+                      <filter id="svgGlow">
+                        <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#a020ff" flood-opacity="0.8" />
+                      </filter>
+                    </defs>
+                    <path d="M 0 100 Q 40 85, 75 92 T 150 45 T 225 60 T 280 20 T 320 30 L 320 120 L 0 120 Z" fill="url(#svgGrad)" />
+                    <path d="M 0 100 Q 40 85, 75 92 T 150 45 T 225 60 T 280 20 T 320 30" fill="none" stroke="#c084fc" stroke-width="2.5" filter="url(#svgGlow)" />
+                    <circle cx="280" cy="20" r="4" fill="#ffffff" stroke="#9312ff" stroke-width="2" />
+                  </svg>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); font-family: monospace;">
+                  <span>Jan 01</span>
+                  <span>Jan 15</span>
+                  <span>Jan 31</span>
+                </div>
+              </div>
+
+              <!-- Right Calendar & Execution Rows -->
+              <div class="cal-card">
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-weight: 700; color: #fff;">
+                    <span>January 2024</span>
+                    <span style="font-size: 10px; color: var(--muted);">Monthly</span>
+                  </div>
+                  <span style="font-size: 10px; color: var(--muted);">Start date–Now (monthly)</span>
+                </div>
+
+                <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
+                  <div class="cal-row">
+                    <span class="cal-label">Total snipes</span>
+                    <span class="cal-val">1,284 <span class="badge-pos">+8.4%</span></span>
+                  </div>
+                  <div class="cal-row">
+                    <span class="cal-label">Avg. execution</span>
+                    <span class="cal-val">0.42s</span>
+                  </div>
+                  <div class="cal-row">
+                    <span class="cal-label">Win rate</span>
+                    <span class="cal-val">68.2% <span class="badge-pos">+2.1%</span></span>
+                  </div>
+                </div>
+
+                <div class="cal-row" style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px;">
+                  <span class="cal-label">Connected apps:</span>
+                  <span style="color: #c084fc; font-weight: 500;">Charting · Terminals</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE / TABLET VIEW (< 900px) -->
+  <div class="mobile-view">
+    <div class="mobile-sky">
+      <canvas id="mobile-canvas" width="400" height="200"></canvas>
+    </div>
+    <h1 class="mobile-headline">
+      <span class="headline-gradient">Zapline</span><br />
+      Trade Smarter,<br />
+      Faster, Safer.
+    </h1>
+    <p class="mobile-lede">
+      The first fully integrated on-chain trading experience. No dashboards, no delays — Zapline empowers you to trade directly from your favorite DeFi apps.
+    </p>
+    <div class="mobile-btns">
+      <button class="btn-violet">Get Started</button>
+      <button class="btn-dark">Learn More</button>
+    </div>
+
+    <div class="mobile-panel">
+      <div class="mobile-chips">
+        <span class="chip active">Dashboard</span>
+        <span class="chip">Snipes</span>
+        <span class="chip">Wallets</span>
+        <span class="chip">Referral</span>
+      </div>
+      <div style="font-size: 11px; color: var(--muted); margin-bottom: 12px; font-family: monospace;">
+        User: Alex T. (0x3f4…9c7e)
+      </div>
+      <div class="stat-card" style="margin-bottom: 10px;">
+        <span class="stat-label">Revenue generated</span>
+        <div class="stat-value-row">
+          <span class="stat-number">214,402</span>
+          <span class="badge-pos">+12.5%</span>
+        </div>
+      </div>
+      <div class="stat-card" style="margin-bottom: 10px;">
+        <span class="stat-label">Active wallets</span>
+        <div class="stat-value-row">
+          <span class="stat-number">6412</span>
+          <span class="badge-neg">−3.1%</span>
+        </div>
+      </div>
+      <div class="cal-card">
+        <div class="cal-row">
+          <span class="cal-label">Speed</span>
+          <span class="cal-val">0.42s</span>
+        </div>
+        <div class="cal-row">
+          <span class="cal-label">Win Rate</span>
+          <span class="cal-val">68.2%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vanilla JS: Starfield, Scaling, Fallback Canvas & Video Hook -->
+  <script>
+    (function() {
+      // 1. Stage Scaling (s = min(vw/1672, vh/941))
+      const stage = document.getElementById('design-stage');
+      function scaleStage() {
+        if (!stage) return;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        if (vw >= 900) {
+          const s = Math.min(vw / 1672, vh / 941);
+          stage.style.transform = 'translate(-50%, -50%) scale(' + s + ')';
+        }
+      }
+      window.addEventListener('resize', scaleStage);
+      scaleStage();
+
+      // 2. Procedural Stars on Canvas
+      const starCanvas = document.getElementById('star-canvas');
+      if (starCanvas) {
+        const ctx = starCanvas.getContext('2d');
+        function initStars() {
+          const w = window.innerWidth;
+          const h = window.innerHeight;
+          starCanvas.width = w;
+          starCanvas.height = h;
+          ctx.clearRect(0, 0, w, h);
+
+          let seed = 42;
+          function rnd() {
+            seed = (seed * 9301 + 49297) % 233280;
+            return seed / 233280;
+          }
+
+          const count = Math.floor((w * h) / 4500);
+          for (let i = 0; i < count; i++) {
+            const x = rnd() * w;
+            const y = rnd() * h;
+            const r = rnd() < 0.85 ? rnd() * 0.9 + 0.3 : rnd() * 1.5 + 0.6;
+            const a = rnd() * 0.7 + 0.3;
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, ' + a.toFixed(2) + ')';
+            ctx.fill();
+          }
+        }
+        window.addEventListener('resize', initStars);
+        initStars();
+      }
+
+      // 3. Fallback Canvas Polar Rim
+      function drawFallbackRim(canvas) {
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const cx = w / 2;
+        const cy = -h * 0.25;
+        const r = w * 0.38;
+
+        const haze = ctx.createRadialGradient(cx, cy, r - 60, cx, cy, r + 200);
+        haze.addColorStop(0, 'rgba(147, 18, 255, 0.45)');
+        haze.addColorStop(0.35, 'rgba(160, 32, 255, 0.25)');
+        haze.addColorStop(0.7, 'rgba(122, 28, 248, 0.08)');
+        haze.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = haze;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r + 200, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0.1 * Math.PI, 0.9 * Math.PI);
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#c084fc';
+        ctx.shadowColor = '#9312ff';
+        ctx.shadowBlur = 25;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, r - 2, 0.12 * Math.PI, 0.88 * Math.PI);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#f43f5e';
+        ctx.shadowColor = '#e11d48';
+        ctx.shadowBlur = 15;
+        ctx.stroke();
+      }
+
+      drawFallbackRim(document.getElementById('fallback-canvas'));
+      drawFallbackRim(document.getElementById('mobile-canvas'));
+
+      // 4. Video Fade In when ready
+      const vid = document.getElementById('glow-video');
+      if (vid) {
+        vid.addEventListener('canplay', function() {
+          vid.classList.add('loaded');
+          vid.play().catch(function() {});
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

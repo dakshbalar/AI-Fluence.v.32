@@ -1,0 +1,8 @@
+{
+  "name": "AI Fluence",
+  "description": "A gamified learning platform for AI and coding courses.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

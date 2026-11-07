@@ -1,0 +1,128 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Shared security helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Connectivity test endpoint
+    match /test/{docId} {
+      allow read: if true;
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isOwner(userId) && incoming().uid == request.auth.uid;
+      allow update: if isOwner(userId) && incoming().uid == request.auth.uid;
+    }
+
+    // Unique user codes directory
+    match /userCodes/{userCode} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isSignedIn() && incoming().uid == request.auth.uid;
+      allow update: if isSignedIn() && incoming().uid == request.auth.uid && existing().uid == request.auth.uid;
+    }
+
+    // Course enrollments and questionnaire responses
+    match /enrollments/{enrollmentId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || enrollmentId.matches('^' + request.auth.uid + '_.*'));
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+      allow update: if isSignedIn() && incoming().userId == request.auth.uid && existing().userId == request.auth.uid;
+    }
+
+    // Level progress and star scoring
+    match /levelProgress/{progressId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || progressId.matches('^' + request.auth.uid + '_.*'));
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+      allow update: if isSignedIn() && incoming().userId == request.auth.uid && existing().userId == request.auth.uid;
+    }
+
+    // Reward transaction ledger
+    match /rewardTransactions/{transactionId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+    }
+
+    // Friend requests
+    match /friendRequests/{requestId} {
+      allow read: if isSignedIn() && (resource.data.senderUid == request.auth.uid || resource.data.receiverUid == request.auth.uid);
+      allow create: if isSignedIn() && incoming().senderUid == request.auth.uid && incoming().senderUid != incoming().receiverUid;
+      allow update: if isSignedIn() && (resource.data.receiverUid == request.auth.uid || resource.data.senderUid == request.auth.uid);
+      allow delete: if isSignedIn() && (resource.data.senderUid == request.auth.uid || resource.data.receiverUid == request.auth.uid);
+    }
+
+    // Confirmed friendships
+    match /friendships/{friendshipId} {
+      allow read: if isSignedIn() && (resource.data.user1Uid == request.auth.uid || resource.data.user2Uid == request.auth.uid);
+      allow create: if isSignedIn() && (incoming().user1Uid == request.auth.uid || incoming().user2Uid == request.auth.uid);
+      allow delete: if isSignedIn() && (resource.data.user1Uid == request.auth.uid || resource.data.user2Uid == request.auth.uid);
+    }
+
+    // User achievements
+    match /userAchievements/{docId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create, update: if isSignedIn() && incoming().userId == request.auth.uid;
+    }
+
+    // User inventory & items
+    match /userInventory/{docId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create, update: if isSignedIn() && incoming().userId == request.auth.uid;
+    }
+
+    // User quests
+    match /userQuests/{docId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create, update: if isSignedIn() && incoming().userId == request.auth.uid;
+    }
+
+    // Leagues & members
+    match /leagues/{leagueId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    match /leagueMembers/{memberId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && (incoming().userId == request.auth.uid || resource.data.userId == request.auth.uid);
+    }
+
+    // Clans & members
+    match /clans/{clanId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn();
+    }
+
+    match /clanMembers/{memberId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && (incoming().userId == request.auth.uid || resource.data.userId == request.auth.uid);
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+  }
+}

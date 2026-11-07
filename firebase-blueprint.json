@@ -1,0 +1,250 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Stores gamified profile and progress details for LingoDuels learners.",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "xp": { "type": "integer" },
+        "streak": { "type": "integer" },
+        "lastActiveDate": { "type": "string" },
+        "currentLanguage": { "type": "string" },
+        "hearts": { "type": "integer" },
+        "lastHeartRecharge": { "type": "string" },
+        "level": { "type": "integer" },
+        "clanId": { "type": "string", "description": "ID of the clan the user has joined" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["displayName", "email", "xp", "streak", "currentLanguage", "hearts", "level"]
+    },
+    "Clan": {
+      "title": "Clan",
+      "description": "Stores clan details, description, shields, XP, and members list.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "tag": { "type": "string" },
+        "description": { "type": "string" },
+        "type": { "type": "string" },
+        "shieldColor": { "type": "string" },
+        "shieldSymbol": { "type": "string" },
+        "totalXp": { "type": "integer" },
+        "requiredXp": { "type": "integer" },
+        "location": { "type": "string" },
+        "members": { "type": "array", "description": "Array of clan member profiles" },
+        "messages": { "type": "array", "description": "Array of clan chat messages" }
+      },
+      "required": ["id", "name", "tag", "description", "type", "shieldColor", "shieldSymbol", "totalXp", "members"]
+    },
+    "Vocabulary": {
+      "title": "Vocabulary",
+      "description": "A learned word in a user's personal lexicon.",
+      "type": "object",
+      "properties": {
+        "word": { "type": "string" },
+        "translation": { "type": "string" },
+        "language": { "type": "string" },
+        "strength": { "type": "integer" },
+        "lastReviewed": { "type": "string", "format": "date-time" }
+      },
+      "required": ["word", "translation", "language", "strength", "lastReviewed"]
+    },
+    "UserProgress": {
+      "title": "UserProgress",
+      "description": "Tracks completion of lessons or units.",
+      "type": "object",
+      "properties": {
+        "lessonId": { "type": "string" },
+        "completedAt": { "type": "string", "format": "date-time" },
+        "score": { "type": "integer" }
+      },
+      "required": ["lessonId", "completedAt", "score"]
+    },
+    "DailyQuest": {
+      "title": "DailyQuest",
+      "description": "Global daily quest template pool.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "targetGoal": { "type": "integer" },
+        "rewardGems": { "type": "integer" },
+        "estimatedMinutes": { "type": "integer" },
+        "category": { "type": "string" }
+      },
+      "required": ["id", "title", "description", "targetGoal", "rewardGems"]
+    },
+    "StudentDailyQuest": {
+      "title": "StudentDailyQuest",
+      "description": "Per-student daily quest assignment for a specific date.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "date": { "type": "string" },
+        "quests": { "type": "array" },
+        "allMandatoryCompleted": { "type": "boolean" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "date", "quests"]
+    },
+    "DailyActivityRecord": {
+      "title": "DailyActivityRecord",
+      "description": "Tracks daily student activity minutes, assessment status, and XP.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "date": { "type": "string" },
+        "activeMinutes": { "type": "integer" },
+        "assessmentCompleted": { "type": "boolean" },
+        "earnedXP": { "type": "integer" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "date", "activeMinutes"]
+    },
+    "StudentStreak": {
+      "title": "StudentStreak",
+      "description": "Tracks streak state, current count, and completion history for a student.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "currentStreak": { "type": "integer" },
+        "highestStreak": { "type": "integer" },
+        "lastCompletedDate": { "type": "string" },
+        "history": { "type": "array" }
+      },
+      "required": ["id", "userId", "currentStreak"]
+    },
+    "StudentMonthlyQuest": {
+      "title": "StudentMonthlyQuest",
+      "description": "Tracks completed daily streak count per student for a given month.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "year": { "type": "integer" },
+        "monthIndex": { "type": "integer" },
+        "completedDaysCount": { "type": "integer" },
+        "completedDates": { "type": "array" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "year", "monthIndex"]
+    },
+    "UserLives": {
+      "title": "UserLives",
+      "description": "Tracks user lives balance, max capacity, and automatic regeneration timestamps.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "currentLives": { "type": "integer" },
+        "maxLives": { "type": "integer" },
+        "regenerationInterval": { "type": "integer" },
+        "lastLifeConsumedAt": { "type": "string" },
+        "nextLifeAt": { "type": "string" },
+        "lastUpdatedAt": { "type": "string" }
+      },
+      "required": ["userId", "currentLives", "maxLives"]
+    },
+    "LifeTransaction": {
+      "title": "LifeTransaction",
+      "description": "Audit record of life changes (consumption, regeneration, ad rewards).",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "type": { "type": "string" },
+        "amount": { "type": "integer" },
+        "reason": { "type": "string" },
+        "levelId": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["userId", "type", "amount", "reason"]
+    },
+    "AdReward": {
+      "title": "AdReward",
+      "description": "Log of verified rewarded ads watched for life refills.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "rewardType": { "type": "string" },
+        "amount": { "type": "integer" },
+        "status": { "type": "string" },
+        "adNetwork": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["userId", "rewardType", "amount", "status"]
+    },
+    "LevelEntry": {
+      "title": "LevelEntry",
+      "description": "Record of authorized level entries after life deduction.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "levelId": { "type": "string" },
+        "lifeConsumed": { "type": "integer" },
+        "entryStatus": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["userId", "levelId", "lifeConsumed", "entryStatus"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile collection."
+    },
+    "/users/{userId}/vocabulary/{vocabId}": {
+      "schema": "Vocabulary",
+      "description": "Learned words for a specific user."
+    },
+    "/users/{userId}/progress/{progressId}": {
+      "schema": "UserProgress",
+      "description": "Lesson progress history."
+    },
+    "/clans/{clanId}": {
+      "schema": "Clan",
+      "description": "Clans storage and details."
+    },
+    "/daily_quests/{questId}": {
+      "schema": "DailyQuest",
+      "description": "Global daily quest templates."
+    },
+    "/student_daily_quests/{docId}": {
+      "schema": "StudentDailyQuest",
+      "description": "Assigned daily quests per student."
+    },
+    "/daily_activity/{docId}": {
+      "schema": "DailyActivityRecord",
+      "description": "Student daily activity and learning time records."
+    },
+    "/student_streaks/{userId}": {
+      "schema": "StudentStreak",
+      "description": "Student streak records."
+    },
+    "/student_monthly_quests/{docId}": {
+      "schema": "StudentMonthlyQuest",
+      "description": "Student monthly quest streak completion records."
+    },
+    "/user_lives/{userId}": {
+      "schema": "UserLives",
+      "description": "Energy / lives balance and regeneration state per user."
+    },
+    "/life_transactions/{txId}": {
+      "schema": "LifeTransaction",
+      "description": "Audit log for life additions and deductions."
+    },
+    "/ad_rewards/{rewardId}": {
+      "schema": "AdReward",
+      "description": "Rewarded ad verification records."
+    },
+    "/level_entries/{entryId}": {
+      "schema": "LevelEntry",
+      "description": "Authorized level entry logs."
+    }
+  }
+}
