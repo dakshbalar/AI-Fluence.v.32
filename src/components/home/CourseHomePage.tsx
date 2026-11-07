@@ -59,6 +59,7 @@ import { GeneratedLevelDecks } from "../../types/curriculum";
 import { useEngagementStore } from "../../utils/engagementStore";
 import { UserIntroModal } from "../onboarding/UserIntroModal";
 import { InteractiveEngagementSuite } from "./InteractiveEngagementSuite";
+import { SnapchatAvatarBubble } from "../avatar/SnapchatAvatarBubble";
 
 // Map Catalog to Dropdown Course format
 const dropdownCoursesList: DropdownCourse[] = COURSES_CATALOG.map((course) => ({
@@ -1341,6 +1342,12 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
         <InteractiveEngagementSuite 
           onShowToast={showToast} 
           userName={profile?.username || "Scholar"} 
+        />
+
+        {/* Snapchat-Style Corner Floating Avatar Widget */}
+        <SnapchatAvatarBubble 
+          onOpenStudio={() => setActiveNavTab("avatar")} 
+          onShowToast={showToast} 
         />
 
       </div>
