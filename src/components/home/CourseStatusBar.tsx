@@ -86,6 +86,10 @@ export const CourseStatusBar: React.FC<CourseStatusBarProps> = ({
 
   return (
     <header className="w-full bg-[#0C0C0C]/95 backdrop-blur-xl border-b border-[rgba(215,226,234,0.18)] px-2.5 sm:px-4 py-2 z-40 relative select-none font-['Kanit',sans-serif]">
+      <style>{`
+        .i { display: inline-block; flex: none; vertical-align: middle; }
+        .i svg, svg { width: 100% !important; height: 100% !important; display: block; }
+      `}</style>
       <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-3">
         {/* Left Side: Back button + Course Selector Capsule */}
         <div className="flex items-center gap-2 shrink-0">
@@ -178,7 +182,7 @@ export const CourseStatusBar: React.FC<CourseStatusBarProps> = ({
             whileTap={{ scale: 0.94 }}
             className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full border-2 border-[#1D6BFF] bg-[#111418] text-[#4FA3FF] font-bold text-xs sm:text-sm cursor-pointer shadow-[0_0_10px_rgba(29,107,255,0.25)] hover:brightness-110 transition-all"
             title={`Diamonds: ${diamondsCount.toLocaleString()}`}
-            id="status-bar-diamonds"
+            id="pg"
           >
             <GemSvg size={18} />
             <span className="font-mono tracking-tight font-bold">{diamondsCount}</span>
@@ -191,7 +195,7 @@ export const CourseStatusBar: React.FC<CourseStatusBarProps> = ({
             whileTap={{ scale: 0.94 }}
             className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full border-2 border-[rgba(215,226,234,0.35)] bg-[#111418] text-[#D7E2EA] font-bold text-xs sm:text-sm hover:border-[#1D6BFF] cursor-pointer transition-all"
             title={`Energy Lives: ${playsCount}/5`}
-            id="status-bar-plays"
+            id="ph"
           >
             <HeartSvg size={18} />
             <span className="font-mono tracking-tight font-bold">{playsCount}/5</span>
@@ -204,7 +208,7 @@ export const CourseStatusBar: React.FC<CourseStatusBarProps> = ({
             whileTap={{ scale: 0.94 }}
             className="hidden xs:flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full border-2 border-[rgba(215,226,234,0.35)] bg-[#111418] text-[#D7E2EA] font-bold text-xs sm:text-sm hover:border-[#1D6BFF] cursor-pointer transition-all"
             title={`Trophies: ${trophiesCount.toLocaleString()}`}
-            id="status-bar-trophies"
+            id="px"
           >
             <TrophySvg size={18} />
             <span className="font-mono tracking-tight font-bold text-amber-300">
@@ -220,7 +224,7 @@ export const CourseStatusBar: React.FC<CourseStatusBarProps> = ({
               whileTap={{ scale: 0.94 }}
               className="hidden sm:flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full border-2 border-[rgba(215,226,234,0.35)] bg-[#111418] text-[#D7E2EA] font-bold text-xs sm:text-sm hover:border-[#1D6BFF] cursor-pointer transition-all"
               title={`Streak: ${streakDays} Day${streakDays > 1 ? "s" : ""}`}
-              id="status-bar-streak"
+              id="ps"
             >
               <ShieldStreakSvg size={18} />
               <span className="font-mono tracking-tight font-bold">{streakDays}</span>
