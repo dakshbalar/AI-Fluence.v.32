@@ -12,6 +12,7 @@ import { LeaderboardPage } from "./LeaderboardPage";
 import { StorePage } from "./StorePage";
 import { AvatarProfilePage } from "./AvatarProfilePage";
 import { MoreSettingsPage } from "./MoreSettingsPage";
+import { DesktopLearningSidebar } from "./DesktopLearningSidebar";
 import { activeTimeTracker } from "../../services/activeTimeTracker";
 import { fetchOrCreateUserLives, UserLivesState } from "../../services/livesService";
 import { LevelLaunchBoxModal } from "./LevelLaunchBoxModal";
@@ -59,7 +60,6 @@ import { GeneratedLevelDecks } from "../../types/curriculum";
 import { useEngagementStore } from "../../utils/engagementStore";
 import { UserIntroModal } from "../onboarding/UserIntroModal";
 import { InteractiveEngagementSuite } from "./InteractiveEngagementSuite";
-import { SnapchatAvatarBubble } from "../avatar/SnapchatAvatarBubble";
 
 // Map Catalog to Dropdown Course format
 const dropdownCoursesList: DropdownCourse[] = COURSES_CATALOG.map((course) => ({
@@ -184,6 +184,9 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
 
   // Active toast message
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Daily Spin Wheel Modal state (triggered from top status bar)
+  const [isSpinWheelOpen, setIsSpinWheelOpen] = useState<boolean>(false);
 
   // Mobile Device Frame view toggle
   const [isFramedView, setIsFramedView] = useState<boolean>(true);
@@ -824,11 +827,11 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Main Slide-styled App Container with slide bg & border glow */}
+      {/* Main Responsive App Container (Mobile: max-w-md, Tablet/Laptop: max-w-5xl / max-w-7xl) */}
       <div
         className={`w-full transition-all duration-300 flex flex-col items-center justify-start min-h-screen sm:min-h-[90vh] z-10 ${
           isFramedView
-            ? `max-w-md w-full my-0 sm:my-3 bg-[#000000] border-0 sm:border-2 rounded-none sm:rounded-[36px] overflow-hidden relative ${
+            ? `max-w-md md:max-w-5xl lg:max-w-7xl w-full my-0 md:my-4 bg-[#000000] md:bg-[#07090e]/95 border-0 md:border md:border-white/15 rounded-none sm:rounded-[36px] md:rounded-3xl overflow-hidden relative shadow-[0_25px_70px_rgba(0,0,0,0.9)] ${
                 activePageTheme === "purple"
                   ? "border-purple-500/25"
                   : activePageTheme === "green"
@@ -853,7 +856,7 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
                   ? "border-orange-500/40"
                   : "border-white/20"
               }`
-            : `max-w-xl w-full bg-[#000000] rounded-none sm:rounded-3xl overflow-hidden relative my-0 sm:my-4 border-0 sm:border-2 ${
+            : `max-w-xl md:max-w-5xl lg:max-w-7xl w-full bg-[#000000] md:bg-[#07090e]/95 rounded-none sm:rounded-3xl overflow-hidden relative my-0 md:my-4 border-0 md:border md:border-white/15 shadow-[0_25px_70px_rgba(0,0,0,0.9)] ${
                 activePageTheme === "purple"
                   ? "border-purple-500/25"
                   : activePageTheme === "green"
@@ -910,7 +913,7 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
             }`,
         }}
       >
-        {/* 1. TOP STATUS BAR (Course Dropdown + 🔥 1 + 💎 245 + ⚡ 25) */}
+        {/* 1. TOP STATUS BAR (Course Dropdown + 🔥 Streak + 💎 Gems + ⚡ Plays + Desktop Nav Tabs) */}
         {activeNavTab !== "curriculum" && (
           <CourseStatusBar
             currentCourseName={currentCourse.name}
@@ -924,6 +927,13 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
             themeColor={activePageTheme}
             isStoreActive={activeNavTab === "store" || activeNavTab === "avatar"}
             isCourseDropdownOpen={isCourseDropdownOpen}
+            activeNavTab={activeNavTab}
+            onSelectNavTab={(tab) => {
+              if (activeNavTab !== "more") {
+                setPreviousNavTab(activeNavTab);
+              }
+              setActiveNavTab(tab);
+            }}
             onToggleCourseDropdown={() => setIsCourseDropdownOpen((prev) => !prev)}
             onOpenStreak={() => showToast(`🔥 Daily Streak: ${streakCount} Day. Keep it going!`)}
             onOpenTrophies={() => {
@@ -941,6 +951,7 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
               )
             }
             onOpenDiamonds={() => showToast(`💎 Diamonds: ${diamonds} available for rewards.`)}
+            onOpenSpinWheel={() => setIsSpinWheelOpen(true)}
           />
         )}
 
@@ -967,87 +978,123 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
 
         {/* 3. ACTIVE TAB PAGE CONTENT */}
         {activeNavTab === "home" && (
-          <FullLearningMap
-            courseId={selectedCourseId}
-            courseTitle={
-              hasBothTracks
-                ? `${currentCourse.name} • ${activeTrack === "theory" ? "Theory Map" : "Questions Map"}`
-                : currentCourse.name
-            }
-            themeColor={currentCourse.theme}
-            sections={currentCourseSections}
-            activeSectionNumber={activeSectionNumber}
-            onSelectSection={(num) => setActiveSectionNumber(num)}
-            onLaunchLesson={handleLaunchLesson}
-            onOpenChestReward={handleOpenChest}
-            onClaimXp={(amount) => {
-              addStoreXp?.(amount);
-              showToast(`⚡ Gained +${amount} XP! Level progression boosted!`);
-            }}
-            onClaimDiamonds={(amount) => {
-              addStoreDiamonds?.(amount);
-              showToast(`💎 Claimed +${amount} Diamonds!`);
-            }}
-            onActivateUnlimitedLives={(hours) => {
-              showToast(`🛡️ Activated Unlimited Lives for ${hours} Hour${hours > 1 ? "s" : ""}!`);
-            }}
-            onClaimAirdrop={(dia, xp, name) => {
-              handleAddDiamonds(dia);
-              addStoreXp?.(xp);
-              showToast(`🎁 ${name} Claimed! +${dia} 💎 & +${xp} XP!`);
-            }}
-            onShowToast={showToast}
-            onSelectCourse={handleSelectCourse}
-            activeTrack={activeTrack}
-            onSelectTrack={(track) => {
-              setActiveTrack(track);
-              setActiveSectionNumber(1);
-            }}
-            unitBanner={
-              <UnitBanner
-                sectionNumber={activeSection.sectionNumber}
-                totalSections={currentCourseSections.length || 3}
-                unitNumber={activeSection.unitNumber}
-                unitTitle={activeSection.unitTitle}
-                courseName={currentCourse.name}
-                themeColor={currentCourse.theme}
-                allSections={allSectionsSummary}
-                activeTrack={activeTrack}
-                hasBothTracks={hasBothTracks}
-                activeSubjectName={
-                  selectedCourseId === "generative_ai"
-                    ? activeSectionNumber <= 8
-                      ? "Prompt Engineering 101"
-                      : activeSectionNumber <= 16
-                      ? "Fine-Tuning LLM 101"
-                      : "RAG Systems 101"
-                    : selectedCourseId === "ai_for_everyone"
-                    ? "AI for Everyone"
-                    : undefined
+          <div className="w-full flex flex-col lg:flex-row items-start justify-center gap-6 xl:gap-8 px-2 sm:px-4 lg:px-6 py-2">
+            {/* Left Column: Full Learning Map */}
+            <div className="w-full flex-1 min-w-0 max-w-full lg:max-w-3xl xl:max-w-4xl mx-auto">
+              <FullLearningMap
+                courseId={selectedCourseId}
+                courseTitle={
+                  hasBothTracks
+                    ? `${currentCourse.name} • ${activeTrack === "theory" ? "Theory Map" : "Questions Map"}`
+                    : currentCourse.name
                 }
+                themeColor={currentCourse.theme}
+                sections={currentCourseSections}
+                activeSectionNumber={activeSectionNumber}
+                onSelectSection={(num) => setActiveSectionNumber(num)}
+                onLaunchLesson={handleLaunchLesson}
+                onOpenChestReward={handleOpenChest}
+                onClaimXp={(amount) => {
+                  addStoreXp?.(amount);
+                  showToast(`⚡ Gained +${amount} XP! Level progression boosted!`);
+                }}
+                onClaimDiamonds={(amount) => {
+                  addStoreDiamonds?.(amount);
+                  showToast(`💎 Claimed +${amount} Diamonds!`);
+                }}
+                onActivateUnlimitedLives={(hours) => {
+                  showToast(`🛡️ Activated Unlimited Lives for ${hours} Hour${hours > 1 ? "s" : ""}!`);
+                }}
+                onClaimAirdrop={(dia, xp, name) => {
+                  handleAddDiamonds(dia);
+                  addStoreXp?.(xp);
+                  showToast(`🎁 ${name} Claimed! +${dia} 💎 & +${xp} XP!`);
+                }}
+                onShowToast={showToast}
+                onSelectCourse={handleSelectCourse}
+                activeTrack={activeTrack}
                 onSelectTrack={(track) => {
                   setActiveTrack(track);
                   setActiveSectionNumber(1);
-                  showToast(track === "theory" ? `📘 Switched to ${currentCourse.name} Theory Map` : `⚡ Switched to ${currentCourse.name} Academy Map`);
                 }}
-                onSelectSection={(num) => setActiveSectionNumber(num)}
-                onNextSection={() =>
-                  setActiveSectionNumber((prev) =>
-                    Math.min(currentCourseSections.length || 3, prev + 1)
-                  )
+                unitBanner={
+                  <UnitBanner
+                    sectionNumber={activeSection.sectionNumber}
+                    totalSections={currentCourseSections.length || 3}
+                    unitNumber={activeSection.unitNumber}
+                    unitTitle={activeSection.unitTitle}
+                    courseName={currentCourse.name}
+                    themeColor={currentCourse.theme}
+                    allSections={allSectionsSummary}
+                    activeTrack={activeTrack}
+                    hasBothTracks={hasBothTracks}
+                    activeSubjectName={
+                      selectedCourseId === "generative_ai"
+                        ? activeSectionNumber <= 8
+                          ? "Prompt Engineering 101"
+                          : activeSectionNumber <= 16
+                          ? "Fine-Tuning LLM 101"
+                          : "RAG Systems 101"
+                        : selectedCourseId === "ai_for_everyone"
+                        ? "AI for Everyone"
+                        : undefined
+                    }
+                    onSelectTrack={(track) => {
+                      setActiveTrack(track);
+                      setActiveSectionNumber(1);
+                      showToast(track === "theory" ? `📘 Switched to ${currentCourse.name} Theory Map` : `⚡ Switched to ${currentCourse.name} Academy Map`);
+                    }}
+                    onSelectSection={(num) => setActiveSectionNumber(num)}
+                    onNextSection={() =>
+                      setActiveSectionNumber((prev) =>
+                        Math.min(currentCourseSections.length || 3, prev + 1)
+                      )
+                    }
+                    onPrevSection={() =>
+                      setActiveSectionNumber((prev) => Math.max(1, prev - 1))
+                    }
+                    onOpenGuidebook={() => {
+                      setIsSectionDrawerOpen(true);
+                    }}
+                    onOpenSections={() => {
+                      setIsSectionDrawerOpen(true);
+                    }}
+                  />
                 }
-                onPrevSection={() =>
-                  setActiveSectionNumber((prev) => Math.max(1, prev - 1))
-                }
-                onOpenGuidebook={() => {
-                  setIsSectionDrawerOpen(true);
-                }}
-                onOpenSections={() => {
-                  setIsSectionDrawerOpen(true);
-                }}
               />
-            }
-          />
+            </div>
+
+            {/* Right Column: Desktop Sidebar Rail (Visible on lg/xl desktop screens) */}
+            <div className="hidden lg:flex flex-col w-80 xl:w-96 shrink-0 gap-5 pt-4 pb-12 sticky top-20 self-start">
+              <DesktopLearningSidebar
+                courseName={currentCourse.name}
+                courseCode={currentCourse.code}
+                currentLevel={currentCourse.score}
+                streakDays={streakCount}
+                trophiesCount={currentUserTrophies}
+                diamonds={diamonds}
+                plays={plays}
+                userLivesState={userLivesState}
+                dailyTasksDone={2}
+                dailyTasksTotal={3}
+                themeColor={currentCourse.theme}
+                onOpenQuests={() => {
+                  setActiveNavTab("quests");
+                  showToast("📜 Opening Quests & Daily Goals!");
+                }}
+                onOpenLeaderboard={() => {
+                  setActiveNavTab("leaderboard");
+                  setLeaderboardSubTab("leaderboard");
+                  showToast("🏆 Opening Leagues & Leaderboard!");
+                }}
+                onOpenStore={() => {
+                  setActiveNavTab("store");
+                  showToast("💎 Opening Scholar Store & Vault!");
+                }}
+                onOpenChestReward={() => handleOpenChest()}
+              />
+            </div>
+          </div>
         )}
 
         {activeNavTab === "curriculum" && (
@@ -1116,83 +1163,93 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
         )}
 
         {activeNavTab === "quests" && (
-          <QuestsPage
-            courseId={selectedCourseId}
-            onSelectCourse={handleSelectCourse}
-            onClaimReward={handleClaimQuestReward}
-            onFindFriend={() => showToast("👥 Friend invitation sent!")}
-            onLaunchLesson={(lvlId) => {
-              setActiveNavTab("home");
-              handleLaunchLesson(typeof lvlId === "number" ? lvlId : 701, selectedCourseId, "questions");
-            }}
-            onLaunchQuiz={() => {
-              setActiveNavTab("home");
-              handleLaunchLesson(701, selectedCourseId, "questions");
-            }}
-            onLaunchFlashcards={() => {
-              setActiveNavTab("home");
-              handleLaunchLesson(701, selectedCourseId, "theory");
-            }}
-            onNavigateTab={(tab) => setActiveNavTab(tab as BottomNavTab)}
-            themeColor={currentCourse.theme}
-            diamonds={diamonds}
-            onSpendDiamonds={handleSpendDiamonds}
-            onShowToast={showToast}
-          />
+          <div className="w-full max-w-full md:max-w-4xl lg:max-w-6xl mx-auto px-2 sm:px-4 py-2">
+            <QuestsPage
+              courseId={selectedCourseId}
+              onSelectCourse={handleSelectCourse}
+              onClaimReward={handleClaimQuestReward}
+              onFindFriend={() => showToast("👥 Friend invitation sent!")}
+              onLaunchLesson={(lvlId) => {
+                setActiveNavTab("home");
+                handleLaunchLesson(typeof lvlId === "number" ? lvlId : 701, selectedCourseId, "questions");
+              }}
+              onLaunchQuiz={() => {
+                setActiveNavTab("home");
+                handleLaunchLesson(701, selectedCourseId, "questions");
+              }}
+              onLaunchFlashcards={() => {
+                setActiveNavTab("home");
+                handleLaunchLesson(701, selectedCourseId, "theory");
+              }}
+              onNavigateTab={(tab) => setActiveNavTab(tab as BottomNavTab)}
+              themeColor={currentCourse.theme}
+              diamonds={diamonds}
+              onSpendDiamonds={handleSpendDiamonds}
+              onShowToast={showToast}
+            />
+          </div>
         )}
 
         {activeNavTab === "leaderboard" && (
-          <LeaderboardPage
-            courseId={selectedCourseId}
-            onSelectCourse={handleSelectCourse}
-            onContinue={() => {
-              setActiveNavTab("home");
-              showToast("🏆 Leaderboard reviewed! Good luck this week!");
-            }}
-            themeColor={activePageTheme}
-            activeSubTab={leaderboardSubTab}
-            onSubTabChange={(tab) => setLeaderboardSubTab(tab)}
-            onClanBannerColorChange={(color) => setClanBannerColor(color)}
-          />
+          <div className="w-full max-w-full md:max-w-4xl lg:max-w-5xl mx-auto px-2 sm:px-4 py-2">
+            <LeaderboardPage
+              courseId={selectedCourseId}
+              onSelectCourse={handleSelectCourse}
+              onContinue={() => {
+                setActiveNavTab("home");
+                showToast("🏆 Leaderboard reviewed! Good luck this week!");
+              }}
+              themeColor={activePageTheme}
+              activeSubTab={leaderboardSubTab}
+              onSubTabChange={(tab) => setLeaderboardSubTab(tab)}
+              onClanBannerColorChange={(color) => setClanBannerColor(color)}
+            />
+          </div>
         )}
 
         {activeNavTab === "store" && (
-          <StorePage
-            diamonds={diamonds}
-            onSpendDiamonds={handleSpendDiamonds}
-            onAddDiamonds={handleAddDiamonds}
-            onAddXP={(amount) => {
-              showToast(`⚡ Added +${amount} XP to your course rank!`);
-            }}
-            onActivateUnlimitedLives={(hours) => {
-              showToast(`🛡️ Activated Unlimited Lives for ${hours} Hour${hours > 1 ? "s" : ""}!`);
-            }}
-            onShowToast={showToast}
-            themeColor={currentCourse.theme}
-          />
+          <div className="w-full max-w-full md:max-w-4xl lg:max-w-6xl mx-auto px-2 sm:px-4 py-2">
+            <StorePage
+              diamonds={diamonds}
+              onSpendDiamonds={handleSpendDiamonds}
+              onAddDiamonds={handleAddDiamonds}
+              onAddXP={(amount) => {
+                showToast(`⚡ Added +${amount} XP to your course rank!`);
+              }}
+              onActivateUnlimitedLives={(hours) => {
+                showToast(`🛡️ Activated Unlimited Lives for ${hours} Hour${hours > 1 ? "s" : ""}!`);
+              }}
+              onShowToast={showToast}
+              themeColor={currentCourse.theme}
+            />
+          </div>
         )}
 
         {activeNavTab === "avatar" && (
-          <AvatarProfilePage
-            courseId={selectedCourseId}
-            onSelectCourse={handleSelectCourse}
-            themeColor={activePageTheme}
-            onOpenSettings={() => {
-              setPreviousNavTab("avatar");
-              setActiveNavTab("more");
-            }}
-            onStartLearning={() => {
-              setActiveNavTab("home");
-            }}
-          />
+          <div className="w-full max-w-full md:max-w-3xl lg:max-w-4xl mx-auto px-2 sm:px-4 py-2">
+            <AvatarProfilePage
+              courseId={selectedCourseId}
+              onSelectCourse={handleSelectCourse}
+              themeColor={activePageTheme}
+              onOpenSettings={() => {
+                setPreviousNavTab("avatar");
+                setActiveNavTab("more");
+              }}
+              onStartLearning={() => {
+                setActiveNavTab("home");
+              }}
+            />
+          </div>
         )}
 
         {activeNavTab === "more" && (
-          <MoreSettingsPage
-            themeColor={activePageTheme}
-            onDone={() => setActiveNavTab(previousNavTab || "home")}
-            onResetProgress={onBackToApp}
-          />
+          <div className="w-full max-w-full md:max-w-2xl lg:max-w-3xl mx-auto px-2 sm:px-4 py-2">
+            <MoreSettingsPage
+              themeColor={activePageTheme}
+              onDone={() => setActiveNavTab(previousNavTab || "home")}
+              onResetProgress={onBackToApp}
+            />
+          </div>
         )}
 
         {/* 4. FIXED BOTTOM NAVIGATION BAR */}
@@ -1342,12 +1399,8 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
         <InteractiveEngagementSuite 
           onShowToast={showToast} 
           userName={profile?.username || "Scholar"} 
-        />
-
-        {/* Snapchat-Style Corner Floating Avatar Widget */}
-        <SnapchatAvatarBubble 
-          onOpenStudio={() => setActiveNavTab("avatar")} 
-          onShowToast={showToast} 
+          isSpinWheelOpen={isSpinWheelOpen}
+          onCloseSpinWheel={() => setIsSpinWheelOpen(false)}
         />
 
       </div>

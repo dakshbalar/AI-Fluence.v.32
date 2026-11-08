@@ -25,11 +25,15 @@ import { useEngagementStore } from "../../utils/engagementStore";
 interface InteractiveEngagementProps {
   onShowToast: (msg: string) => void;
   userName: string;
+  isSpinWheelOpen?: boolean;
+  onCloseSpinWheel?: () => void;
 }
 
 export const InteractiveEngagementSuite: React.FC<InteractiveEngagementProps> = ({
   onShowToast,
-  userName
+  userName,
+  isSpinWheelOpen: externalIsSpinOpen,
+  onCloseSpinWheel: externalCloseSpin,
 }) => {
   const { state: gamification, addXp, addDiamonds } = useGamification();
   const { profile, updateProfile } = useEngagementStore();
@@ -48,7 +52,13 @@ export const InteractiveEngagementSuite: React.FC<InteractiveEngagementProps> = 
   });
 
   // 2. Daily Spin Wheel Modal State
-  const [isSpinWheelOpen, setIsSpinWheelOpen] = useState<boolean>(false);
+  const [internalSpinOpen, setInternalSpinOpen] = useState<boolean>(false);
+  const isSpinWheelOpen = externalIsSpinOpen !== undefined ? externalIsSpinOpen : internalSpinOpen;
+  const setIsSpinWheelOpen = (val: boolean) => {
+    if (externalCloseSpin && !val) externalCloseSpin();
+    setInternalSpinOpen(val);
+  };
+
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [spinResult, setSpinResult] = useState<string | null>(null);
 
@@ -248,7 +258,7 @@ export const InteractiveEngagementSuite: React.FC<InteractiveEngagementProps> = 
         )}
       </AnimatePresence>
 
-      {/* 7. CLAN LIVE ANNOUNCEMENT TICKER (Bottom Floating Bar or Header Ticker) */}
+      {/* 7. CLAN LIVE ANNOUNCEMENT TICKER */}
       <div className="w-full bg-gradient-to-r from-blue-950 via-slate-900 to-blue-950 border-y border-blue-500/20 py-1.5 px-4 overflow-hidden text-xs font-mono text-sky-300 flex items-center gap-3 shadow-inner">
         <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-[9px] font-black uppercase shrink-0">Live Clan Feed</span>
         <div className="overflow-hidden whitespace-nowrap w-full">
@@ -256,27 +266,6 @@ export const InteractiveEngagementSuite: React.FC<InteractiveEngagementProps> = 
             🔥 CyberKnights clan climbed to #2 in global league! • Scholar Alex completed DSA Section 3 with 3 Stars! • New Weekly Clan Tournament is now live!
           </p>
         </div>
-      </div>
-
-      {/* FLOATING ENGAGEMENT QUICK LAUNCH BUTTONS BAR (Spin Wheel & Status Picker) */}
-      <div className="fixed bottom-6 left-6 z-40 flex items-center gap-2">
-        <button
-          onClick={() => setIsSpinWheelOpen(true)}
-          className="px-3.5 py-2 rounded-full bg-[#121418] border border-amber-500/40 hover:border-amber-400 text-amber-300 text-xs font-bold shadow-lg flex items-center gap-1.5 backdrop-blur-md transition-all active:scale-95 cursor-pointer"
-          title="Daily Luck Wheel"
-        >
-          <span>🎡</span>
-          <span className="hidden sm:inline">Daily Spin</span>
-        </button>
-
-        <button
-          onClick={() => setIsStatusPickerOpen(true)}
-          className="px-3.5 py-2 rounded-full bg-[#121418] border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 text-xs font-bold shadow-lg flex items-center gap-1.5 backdrop-blur-md transition-all active:scale-95 cursor-pointer"
-          title="Set Scholar Status"
-        >
-          <span>⚡</span>
-          <span className="hidden sm:inline">Status</span>
-        </button>
       </div>
 
       {/* 10. SCHOLAR STATUS PICKER MODAL */}

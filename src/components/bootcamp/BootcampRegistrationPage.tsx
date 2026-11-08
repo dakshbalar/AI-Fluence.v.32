@@ -25,7 +25,7 @@ import {
   PlusCircle,
   Table as TableIcon
 } from "lucide-react";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import { 
   DEFAULT_SPREADSHEET_ID, 
   DEFAULT_SPREADSHEET_NAME,

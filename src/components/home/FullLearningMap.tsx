@@ -325,8 +325,8 @@ export const FullLearningMap: React.FC<FullLearningMapProps> = ({
       className="w-full min-h-screen bg-[#0C0C0C] text-[#D7E2EA] font-kanit select-none relative overflow-x-hidden"
       data-track={trackKey}
     >
-      {/* Centered Wrap Container (.wrap) max 520px */}
-      <div className="wrap max-w-[520px] mx-auto px-4 pt-4 pb-36 relative">
+      {/* Centered Wrap Container (.wrap) responsive for mobile, tablet, and desktop */}
+      <div className="wrap w-full max-w-[520px] md:max-w-[620px] lg:max-w-[700px] mx-auto px-2 sm:px-4 pt-4 pb-36 relative">
         {/* =========================================================================
             1. TOP TABS: QUESTIONS vs THEORY (.tabs)
             ========================================================================= */}

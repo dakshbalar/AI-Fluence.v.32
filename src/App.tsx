@@ -44,8 +44,6 @@ import {
 import { auth, db } from './firebase';
 import { CourseHomePage } from './components/home/CourseHomePage';
 import { BootcampRegistrationPage } from './components/bootcamp/BootcampRegistrationPage';
-import { ZaplineHeroPage } from './components/zapline/ZaplineHeroPage';
-import { JackCreatorPage } from './components/jack/JackCreatorPage';
 import { AIFluenceJackLandingPage } from './components/home/AIFluenceJackLandingPage';
 import { AIFluenceLogo } from './components/common/AIFluenceLogo';
 import { persistCourseId, persistEnrolledCourseIds } from './data/coursesData';
@@ -150,19 +148,13 @@ export default function App() {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'course_home' | 'bootcamp_registration' | 'zapline' | 'jack'>(() => {
-    if (window.location.pathname === '/jack' || window.location.pathname === '/jack-3d-creator') return 'jack';
-    if (window.location.pathname === '/zapline') return 'zapline';
+  const [currentView, setCurrentView] = useState<'dashboard' | 'course_home' | 'bootcamp_registration'>(() => {
     if (window.location.pathname === '/bootcamp-registration') return 'bootcamp_registration';
     return 'dashboard';
   });
   useEffect(() => {
     const handlePopState = () => {
-      if (window.location.pathname === '/jack' || window.location.pathname === '/jack-3d-creator') {
-        setCurrentView('jack');
-      } else if (window.location.pathname === '/zapline') {
-        setCurrentView('zapline');
-      } else if (window.location.pathname === '/bootcamp-registration') {
+      if (window.location.pathname === '/bootcamp-registration') {
         setCurrentView('bootcamp_registration');
       } else if (window.location.pathname === '/') {
         setCurrentView('dashboard');
@@ -677,24 +669,6 @@ export default function App() {
               >
                 <span>🔥</span> Bootcamp
               </button>
-              <button
-                onClick={() => {
-                  window.history.pushState({}, '', '/zapline');
-                  setCurrentView('zapline');
-                }}
-                className="hidden sm:inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-cyan-300 bg-blue-950/60 border border-cyan-400/30 hover:border-cyan-400 px-3.5 py-1.5 rounded-full transition cursor-pointer"
-              >
-                <span>⚡</span> Zapline
-              </button>
-              <button
-                onClick={() => {
-                  window.history.pushState({}, '', '/jack');
-                  setCurrentView('jack');
-                }}
-                className="hidden sm:inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-emerald-300 bg-blue-950/60 border border-emerald-400/30 hover:border-emerald-400 px-3.5 py-1.5 rounded-full transition cursor-pointer"
-              >
-                <span>🎨</span> Jack 3D
-              </button>
               
               <div className="flex items-center gap-2 bg-slate-950 border border-sky-400/40 px-3.5 py-1.5 rounded-full text-xs font-black text-white backdrop-blur-xl shadow-[0_0_20px_rgba(56,189,248,0.25)]">
                 <Flame className="w-4 h-4 text-orange-400 fill-orange-400 animate-pulse" />
@@ -836,29 +810,7 @@ export default function App() {
     );
   }
 
-  if (currentView === 'zapline') {
-    return (
-      <ZaplineHeroPage 
-        onBackToHome={() => {
-          window.history.pushState({}, '', '/');
-          setCurrentView('dashboard');
-        }} 
-      />
-    );
-  }
-
-  if (currentView === 'jack') {
-    return (
-      <JackCreatorPage 
-        onBackToHome={() => {
-          window.history.pushState({}, '', '/');
-          setCurrentView('dashboard');
-        }} 
-      />
-    );
-  }
-
-  // Public Landing Page in Jack 3D Creator Style
+  // Public Landing Page
   return (
     <AIFluenceJackLandingPage
       authMode={authMode}
@@ -883,14 +835,6 @@ export default function App() {
       onNavigateToBootcamp={() => {
         window.history.pushState({}, '', '/bootcamp-registration');
         setCurrentView('bootcamp_registration');
-      }}
-      onNavigateToZapline={() => {
-        window.history.pushState({}, '', '/zapline');
-        setCurrentView('zapline');
-      }}
-      onNavigateToJack={() => {
-        window.history.pushState({}, '', '/jack');
-        setCurrentView('jack');
       }}
     />
   );

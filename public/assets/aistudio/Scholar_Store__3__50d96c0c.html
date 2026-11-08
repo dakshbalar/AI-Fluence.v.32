@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scholar Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--fg:#D7E2EA;--b2:#4FA3FF;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#0C0C0C;color:var(--fg);font-family:'Kanit',sans-serif}
+main{max-width:520px;margin:0 auto;padding:16px 16px 60px;overflow-x:clip}
+button{font-family:inherit;color:inherit;cursor:pointer}
+.hh{background:linear-gradient(180deg,#646973,#BBCCD7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:900;text-transform:uppercase;line-height:1;letter-spacing:-.025em}
+.i{display:inline-block;flex:none}.i svg{width:100%;height:100%;display:block}
+.bar{display:flex;gap:8px;position:sticky;top:0;z-index:20;background:rgba(12,12,12,.92);backdrop-filter:blur(8px);padding:10px 0;padding-top:max(10px,env(safe-area-inset-top,0px));margin-top:calc(-1*env(safe-area-inset-top,0px))}
+.pill{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border:2px solid rgba(215,226,234,.35);border-radius:999px;padding:6px 8px;font-weight:700;background:#111418;font-size:.95rem}
+.pill.g{border-color:#1D6BFF;color:var(--b2)}
+h1{font-size:clamp(3rem,15vw,5rem);margin:18px 0 4px}
+.sub{font-weight:300;text-transform:uppercase;letter-spacing:.15em;font-size:.8rem;opacity:.7}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;border:2px solid rgba(215,226,234,.35);border-radius:999px;padding:5px;margin:20px 0 14px}
+.tabs button{border:0;background:none;border-radius:999px;padding:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;font-size:.85rem}
+.tabs button.on{background:linear-gradient(123deg,#010B1F 7%,#0057E7 37%,#1D6BFF 72%,#4FA3FF 100%);box-shadow:4px 4px 12px #2170F1 inset;color:#fff}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px}
+.chip{flex:none;border:2px solid rgba(215,226,234,.35);background:none;border-radius:999px;padding:7px 16px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;font-size:.75rem}
+.chip.on{background:#D7E2EA;color:#0C0C0C;border-color:#D7E2EA}
+.boost{display:none;align-items:center;gap:10px;border:2px solid #1D6BFF;background:#06142e;border-radius:28px;padding:10px 16px;margin-bottom:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;font-size:.8rem}
+.boost.on{display:flex}.boost b{margin-left:auto;color:var(--b2);font-variant-numeric:tabular-nums}
+.feat{border:2px solid #4FA3FF;border-radius:40px;padding:20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;background:radial-gradient(circle at 20% 30%,#0a2a66,#06090f);box-shadow:0 0 40px rgba(29,107,255,.25)}
+.feat small{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--b2);font-weight:600}
+.feat h3{font-weight:800;text-transform:uppercase;font-size:1.3rem;line-height:1.1;margin:2px 0 10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sec{grid-column:1/-1;font-weight:800;text-transform:uppercase;letter-spacing:.1em;font-size:.9rem;opacity:.8;margin-top:10px}
+.card{border:2px solid rgba(215,226,234,.4);border-radius:32px;padding:14px;background:#0f1216;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;position:relative;cursor:pointer}
+.card .art{width:100%;aspect-ratio:1.2;display:grid;place-items:center;border-radius:22px;background:radial-gradient(circle at 50% 40%,#0a1a3d,#06090f)}
+.card b{font-weight:600;text-transform:uppercase;font-size:.85rem;letter-spacing:.03em;line-height:1.2}
+.card small{font-weight:300;opacity:.65;font-size:.72rem;line-height:1.35;min-height:2.7em}
+.own{position:absolute;top:10px;right:10px;background:#1D6BFF;border-radius:999px;font-size:.72rem;font-weight:700;padding:2px 9px;color:#fff}
+.price{display:flex;align-items:center;justify-content:center;gap:6px;font-weight:700;font-size:1rem;color:#fff;border-radius:999px;padding:8px 16px;width:100%;border:0;background:linear-gradient(123deg,#010B1F 7%,#0057E7 37%,#1D6BFF 72%,#4FA3FF 100%);box-shadow:0 4px 4px rgba(1,87,231,.25),4px 4px 12px #2170F1 inset;outline:2px solid #fff;outline-offset:-3px}
+.price.use{background:none;box-shadow:none;outline:0;border:2px solid #D7E2EA;text-transform:uppercase;letter-spacing:.1em;font-size:.8rem}
+.empty{grid-column:1/-1;text-align:center;border:2px solid rgba(215,226,234,.4);border-radius:40px;padding:36px 20px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty h4{font-size:1.4rem;text-transform:uppercase;font-weight:700}.empty p{font-weight:300;opacity:.8;line-height:1.6;font-size:.95rem}
+.bd{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:50;display:none}.bd.on{display:block}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-width:520px;margin:0 auto;z-index:60;background:#fff;color:#0C0C0C;border-radius:40px 40px 0 0;padding:26px 22px calc(26px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .35s cubic-bezier(.25,.1,.25,1);text-align:center}
+.sheet.on{transform:none}
+.sheet .art{width:150px;height:150px;margin:0 auto 6px;border-radius:32px;display:grid;place-items:center;background:radial-gradient(circle,#0a1a3d,#06090f)}
+.sheet h3{font-weight:900;text-transform:uppercase;font-size:1.6rem}.sheet p{font-weight:300;line-height:1.5;margin:6px 0 14px;opacity:.75}
+.qty{display:flex;justify-content:center;align-items:center;gap:18px;margin-bottom:14px}
+.qty button{width:44px;height:44px;border-radius:50%;border:2px solid #0C0C0C;background:none;font-size:1.4rem;font-weight:700}
+.qty b{font-size:1.6rem;min-width:2ch}
+.tot{display:flex;justify-content:center;gap:8px;align-items:center;font-weight:700;margin-bottom:14px;font-size:1.1rem}
+.sheet .go{width:100%;border:0;border-radius:999px;padding:15px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#fff;background:linear-gradient(123deg,#010B1F 7%,#0057E7 37%,#1D6BFF 72%,#4FA3FF 100%);box-shadow:4px 4px 12px #2170F1 inset}
+.sheet .go:disabled{opacity:.4}.sheet .no{color:#c0182b;font-weight:600;font-size:.85rem;margin-bottom:10px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:#D7E2EA;color:#0C0C0C;font-weight:600;border-radius:999px;padding:10px 22px;opacity:0;transition:.3s;z-index:80;text-transform:uppercase;letter-spacing:.08em;font-size:.78rem;text-align:center;max-width:90vw}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+</style></head><body><main>
+<div class="bar" id="bar"></div>
+<h1 class="hh">Store</h1><p class="sub" id="who"></p>
+<div class="tabs"><button id="t1" class="on">Store</button><button id="t2">Inventory</button></div>
+<div class="boost" id="bst"><span class="i" style="width:28px;height:28px" id="bic"></span>2× XP Boost active<b id="btm"></b></div>
+<div class="chips" id="chips"></div>
+<div class="grid" id="view"></div>
+</main>
+<div class="bd" id="bd"></div><div class="sheet" id="sh"></div><div class="toast" id="ts"></div>
+<script>
+(function(){
+var ICONS={"gem": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" width=\"128\" height=\"128\" role=\"img\" aria-label=\"Diamonds (Gems)\"><title>Diamonds (Gems)</title><defs><linearGradient id=\"i-gem-a\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#7DBDFF\"/><stop offset=\"1\" stop-color=\"#0057E7\"/></linearGradient><linearGradient id=\"i-gem-b\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#DDEEFF\"/><stop offset=\"1\" stop-color=\"#5CA4FF\"/></linearGradient></defs><polygon points=\"18,10 46,10 58,24 6,24\" fill=\"url(#i-gem-b)\"/><polygon points=\"6,24 58,24 32,58\" fill=\"url(#i-gem-a)\"/><path d=\"M18 10 L26 24 L32 10 L38 24 L46 10 M26 24 L32 58 L38 24\" fill=\"none\" stroke=\"#fff\" stroke-opacity=\".55\" stroke-width=\"1.2\"/><polygon points=\"14,22 20,12 25,12 18,22\" fill=\"#fff\" opacity=\".85\"/><circle cx=\"48\" cy=\"18\" r=\"2\" fill=\"#fff\"/></svg>", "heart": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" width=\"128\" height=\"128\" role=\"img\" aria-label=\"Energy Lives (Heart)\"><title>Energy Lives (Heart)</title><defs><linearGradient id=\"i-heart-a\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#FF7A7A\"/><stop offset=\"1\" stop-color=\"#B3001B\"/></linearGradient></defs><path d=\"M32 57 C10 41 6 26 12 17 C18 8 29 10 32 18 C35 10 46 8 52 17 C58 26 54 41 32 57Z\" fill=\"url(#i-heart-a)\" stroke=\"#5c0010\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><path d=\"M17 22 C17 16 24 14 28 18\" fill=\"none\" stroke=\"#fff\" stroke-width=\"3.5\" stroke-linecap=\"round\" opacity=\".7\"/></svg>", "xp": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" width=\"128\" height=\"128\" role=\"img\" aria-label=\"XP (Lightning Bolt)\"><title>XP (Lightning Bolt)</title><defs><linearGradient id=\"i-xp-a\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#4FA3FF\"/><stop offset=\"1\" stop-color=\"#0A3FB3\"/></linearGradient><linearGradient id=\"i-xp-b\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#FFF08A\"/><stop offset=\"1\" stop-color=\"#FFB400\"/></linearGradient></defs><circle cx=\"32\" cy=\"32\" r=\"28\" fill=\"url(#i-xp-a)\" stroke=\"#BBCCD7\" stroke-width=\"3\"/><polygon points=\"37,8 17,36 29,36 25,57 47,26 34,26\" fill=\"url(#i-xp-b)\" stroke=\"#8a5a00\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/><ellipse cx=\"22\" cy=\"16\" rx=\"9\" ry=\"4\" fill=\"#fff\" opacity=\".25\" transform=\"rotate(-30 22 16)\"/></svg>", "shield_streak": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" width=\"128\" height=\"128\" role=\"img\" aria-label=\"Streak Shield\"><title>Streak Shield</title><defs><linearGradient id=\"i-shield_streak-a\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#6FB4FF\"/><stop offset=\"1\" stop-color=\"#0A47C8\"/></linearGradient><linearGradient id=\"i-shield_streak-b\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#FFC857\"/><stop offset=\"1\" stop-color=\"#FF3D00\"/></linearGradient></defs><path d=\"M32 3 L57 11 V31 C57 46 46 57 32 61 C18 57 7 46 7 31 V11Z\" fill=\"url(#i-shield_streak-a)\" stroke=\"#BBCCD7\" stroke-width=\"3\" stroke-linejoin=\"round\"/><path d=\"M32 12 L49 18 V31 C49 41 42 49 32 53 C22 49 15 41 15 31 V18Z\" fill=\"#010B1F\" opacity=\".35\"/><path d=\"M32 21 C33 29 41 32 41 40 C41 46 37 50 32 50 C27 50 23 46 23 40 C23 36 27 34 28 30 C30 32 30 34 30 35 C34 31 33 26 32 21Z\" fill=\"url(#i-shield_streak-b)\"/></svg>", "chest_silver": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" width=\"128\" height=\"128\" role=\"img\" aria-label=\"Silver Chest\"><title>Silver Chest</title><defs><linearGradient id=\"i-chest_silver-a\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#F2F6FA\"/><stop offset=\"1\" stop-color=\"#9AA5B1\"/></linearGradient><linearGradient id=\"i-chest_silver-b\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#C5CED8\"/><stop offset=\"1\" stop-color=\"#5B6572\"/></linearGradient></defs><rect x=\"7\" y=\"28\" width=\"50\" height=\"27\" rx=\"4\" fill=\"url(#i-chest_silver-b)\"/><path d=\"M7 30 V24 C7 14 18 9 32 9 C46 9 57 14 57 24 V30Z\" fill=\"url(#i-chest_silver-a)\"/><rect x=\"7\" y=\"27\" width=\"50\" height=\"5\" fill=\"#7B8794\"/><rect x=\"14\" y=\"10\" width=\"5\" height=\"45\" fill=\"#7B8794\" opacity=\".75\"/><rect x=\"45\" y=\"10\" width=\"5\" height=\"45\" fill=\"#7B8794\" opacity=\".75\"/><rect x=\"26\" y=\"26\" width=\"12\" height=\"14\" rx=\"3\" fill=\"#F5C542\" stroke=\"#000\" stroke-opacity=\".3\"/><circle cx=\"32\" cy=\"33\" r=\"2\" fill=\"#333\"/><circle cx=\"11\" cy=\"35\" r=\"1.8\" fill=\"#F5C542\"/><circle cx=\"53\" cy=\"35\" r=\"1.8\" fill=\"#F5C542\"/><circle cx=\"11\" cy=\"50\" r=\"1.8\" fill=\"#F5C542\"/><circle cx=\"53\" cy=\"50\" r=\"1.8\" fill=\"#F5C542\"/></svg>", "chest_gold": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" width=\"128\" height=\"128\" role=\"img\" aria-label=\"Gold Chest\"><title>Gold Chest</title><defs><linearGradient id=\"i-chest_gold-a\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#FFE98A\"/><stop offset=\"1\" stop-color=\"#D18A00\"/></linearGradient><linearGradient id=\"i-chest_gold-b\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#F0B429\"/><stop offset=\"1\" stop-color=\"#9A5B00\"/></linearGradient></defs><rect x=\"7\" y=\"28\" width=\"50\" height=\"27\" rx=\"4\" fill=\"url(#i-chest_gold-b)\"/><path d=\"M7 30 V24 C7 14 18 9 32 9 C46 9 57 14 57 24 V30Z\" fill=\"url(#i-chest_gold-a)\"/><rect x=\"7\" y=\"27\" width=\"50\" height=\"5\" fill=\"#B87400\"/><rect x=\"14\" y=\"10\" width=\"5\" height=\"45\" fill=\"#B87400\" opacity=\".75\"/><rect x=\"45\" y=\"10\" width=\"5\" height=\"45\" fill=\"#B87400\" opacity=\".75\"/><rect x=\"26\" y=\"26\" width=\"12\" height=\"14\" rx=\"3\" fill=\"#FFE27A\" stroke=\"#000\" stroke-opacity=\".3\"/><circle cx=\"32\" cy=\"33\" r=\"2\" fill=\"#333\"/><circle cx=\"11\" cy=\"35\" r=\"1.8\" fill=\"#FFE27A\"/><circle cx=\"53\" cy=\"35\" r=\"1.8\" fill=\"#FFE27A\"/><circle cx=\"11\" cy=\"50\" r=\"1.8\" fill=\"#FFE27A\"/><circle cx=\"53\" cy=\"50\" r=\"1.8\" fill=\"#FFE27A\"/><polygon points=\"32,10 38,16 32,24 26,16\" fill=\"#E0115F\" stroke=\"#fff\" stroke-width=\"1\"/></svg>", "chest_deluxe": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" width=\"128\" height=\"128\" role=\"img\" aria-label=\"Deluxe Epic Stash\"><title>Deluxe Epic Stash</title><defs><linearGradient id=\"i-chest_deluxe-a\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#9CFFF2\"/><stop offset=\"1\" stop-color=\"#3D8BFF\"/></linearGradient><linearGradient id=\"i-chest_deluxe-b\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#4FA3FF\"/><stop offset=\"1\" stop-color=\"#1a2a8c\"/></linearGradient></defs><circle cx=\"32\" cy=\"34\" r=\"30\" fill=\"#7DF3FF\" opacity=\".25\"/><rect x=\"7\" y=\"28\" width=\"50\" height=\"27\" rx=\"4\" fill=\"url(#i-chest_deluxe-b)\"/><path d=\"M7 30 V24 C7 14 18 9 32 9 C46 9 57 14 57 24 V30Z\" fill=\"url(#i-chest_deluxe-a)\"/><rect x=\"7\" y=\"27\" width=\"50\" height=\"5\" fill=\"#7DF3FF\"/><rect x=\"14\" y=\"10\" width=\"5\" height=\"45\" fill=\"#7DF3FF\" opacity=\".75\"/><rect x=\"45\" y=\"10\" width=\"5\" height=\"45\" fill=\"#7DF3FF\" opacity=\".75\"/><rect x=\"26\" y=\"26\" width=\"12\" height=\"14\" rx=\"3\" fill=\"#E8FBFF\" stroke=\"#000\" stroke-opacity=\".3\"/><circle cx=\"32\" cy=\"33\" r=\"2\" fill=\"#333\"/><circle cx=\"11\" cy=\"35\" r=\"1.8\" fill=\"#E8FBFF\"/><circle cx=\"53\" cy=\"35\" r=\"1.8\" fill=\"#E8FBFF\"/><circle cx=\"11\" cy=\"50\" r=\"1.8\" fill=\"#E8FBFF\"/><circle cx=\"53\" cy=\"50\" r=\"1.8\" fill=\"#E8FBFF\"/><polygon points=\"32,10 38,16 32,24 26,16\" fill=\"#E0115F\" stroke=\"#fff\" stroke-width=\"1\"/><polygon points=\"54,4 56,9 61,11 56,13 54,18 52,13 47,11 52,9\" fill=\"#fff\"/><polygon points=\"8,6 9.5,10 14,11.5 9.5,13 8,17 6.5,13 2,11.5 6.5,10\" fill=\"#fff\" opacity=\".8\"/></svg>", "wheel": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" width=\"128\" height=\"128\" role=\"img\" aria-label=\"Wheel / Daily Bonus\"><title>Wheel / Daily Bonus</title><defs></defs><path d=\"M32 34 L32.0 8.0 A26 26 0 0 1 50.4 15.6 Z\" fill=\"#0057E7\"/><path d=\"M32 34 L50.4 15.6 A26 26 0 0 1 58.0 34.0 Z\" fill=\"#06224d\"/><path d=\"M32 34 L58.0 34.0 A26 26 0 0 1 50.4 52.4 Z\" fill=\"#1D6BFF\"/><path d=\"M32 34 L50.4 52.4 A26 26 0 0 1 32.0 60.0 Z\" fill=\"#021436\"/><path d=\"M32 34 L32.0 60.0 A26 26 0 0 1 13.6 52.4 Z\" fill=\"#4FA3FF\"/><path d=\"M32 34 L13.6 52.4 A26 26 0 0 1 6.0 34.0 Z\" fill=\"#0a2a66\"/><path d=\"M32 34 L6.0 34.0 A26 26 0 0 1 13.6 15.6 Z\" fill=\"#2f4fd0\"/><path d=\"M32 34 L13.6 15.6 A26 26 0 0 1 32.0 8.0 Z\" fill=\"#010B1F\"/><circle cx=\"32\" cy=\"34\" r=\"27\" fill=\"none\" stroke=\"#D7E2EA\" stroke-width=\"3\"/><circle cx=\"32\" cy=\"34\" r=\"7\" fill=\"#fff\"/><circle cx=\"32\" cy=\"34\" r=\"3.5\" fill=\"#1D6BFF\"/><polygon points=\"26,1 38,1 32,13\" fill=\"#FFE27A\" stroke=\"#8a5a00\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/></svg>", "flask": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" width=\"128\" height=\"128\" role=\"img\" aria-label=\"Scholar Flask\"><title>Scholar Flask</title><defs><linearGradient id=\"i-flask-a\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#8EC5FF\"/><stop offset=\"1\" stop-color=\"#0057E7\"/></linearGradient></defs><path d=\"M25 6 H39 V10 H36 V24 L50 50 C53 57 48 59 44 59 H20 C16 59 11 57 14 50 L28 24 V10 H25Z\" fill=\"#DDEEFF\" fill-opacity=\".25\" stroke=\"#BBCCD7\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><path d=\"M19.4 40 H44.6 L50 50 C53 57 48 59 44 59 H20 C16 59 11 57 14 50Z\" fill=\"url(#i-flask-a)\"/><rect x=\"24\" y=\"2\" width=\"16\" height=\"6\" rx=\"2\" fill=\"#8B5A2B\"/><circle cx=\"28\" cy=\"48\" r=\"2.5\" fill=\"#fff\" opacity=\".8\"/><circle cx=\"36\" cy=\"52\" r=\"1.8\" fill=\"#fff\" opacity=\".8\"/></svg>", "elixir": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" width=\"128\" height=\"128\" role=\"img\" aria-label=\"Elixir Bottle\"><title>Elixir Bottle</title><defs><linearGradient id=\"i-elixir-a\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#7DFFE0\"/><stop offset=\"1\" stop-color=\"#00A8FF\"/></linearGradient></defs><circle cx=\"32\" cy=\"40\" r=\"26\" fill=\"#7DFFF0\" opacity=\".22\"/><rect x=\"27\" y=\"9\" width=\"10\" height=\"16\" fill=\"#DDEEFF\" fill-opacity=\".3\" stroke=\"#BBCCD7\" stroke-width=\"2\"/><rect x=\"25\" y=\"3\" width=\"14\" height=\"7\" rx=\"2\" fill=\"#8B5A2B\"/><circle cx=\"32\" cy=\"42\" r=\"18\" fill=\"#DDEEFF\" fill-opacity=\".25\" stroke=\"#BBCCD7\" stroke-width=\"2.5\"/><circle cx=\"32\" cy=\"42\" r=\"14.5\" fill=\"url(#i-elixir-a)\"/><ellipse cx=\"26\" cy=\"36\" rx=\"4\" ry=\"2.5\" fill=\"#fff\" opacity=\".7\" transform=\"rotate(-30 26 36)\"/><polygon points=\"44,18 45.5,22 50,23.5 45.5,25 44,29 42.5,25 38,23.5 42.5,22\" fill=\"#fff\"/></svg>", "time_1h": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" width=\"128\" height=\"128\" role=\"img\" aria-label=\"1H Time Boost Stone\"><title>1H Time Boost Stone</title><defs><linearGradient id=\"i-time_1h-a\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#7DF3FF\"/><stop offset=\"1\" stop-color=\"#0090C8\"/></linearGradient></defs><polygon points=\"20,3 44,3 61,20 61,44 44,61 20,61 3,44 3,20\" fill=\"url(#i-time_1h-a)\" stroke=\"#D7E2EA\" stroke-opacity=\".7\" stroke-width=\"2\"/><polygon points=\"24,12 40,12 32,24\" fill=\"#fff\"/><polygon points=\"32,24 24,36 40,36\" fill=\"#fff\" opacity=\".85\"/><path d=\"M22 11 H42 M22 37 H42\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\"/><text x=\"32\" y=\"55\" text-anchor=\"middle\" font-family=\"Kanit,sans-serif\" font-weight=\"800\" font-size=\"12\" fill=\"#fff\">1H</text></svg>", "time_3h": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" width=\"128\" height=\"128\" role=\"img\" aria-label=\"3H Time Boost Stone\"><title>3H Time Boost Stone</title><defs><linearGradient id=\"i-time_3h-a\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#6FB4FF\"/><stop offset=\"1\" stop-color=\"#0A47C8\"/></linearGradient></defs><polygon points=\"20,3 44,3 61,20 61,44 44,61 20,61 3,44 3,20\" fill=\"url(#i-time_3h-a)\" stroke=\"#D7E2EA\" stroke-opacity=\".7\" stroke-width=\"2\"/><polygon points=\"24,12 40,12 32,24\" fill=\"#fff\"/><polygon points=\"32,24 24,36 40,36\" fill=\"#fff\" opacity=\".85\"/><path d=\"M22 11 H42 M22 37 H42\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\"/><text x=\"32\" y=\"55\" text-anchor=\"middle\" font-family=\"Kanit,sans-serif\" font-weight=\"800\" font-size=\"12\" fill=\"#fff\">3H</text></svg>", "time_24h": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" width=\"128\" height=\"128\" role=\"img\" aria-label=\"24H Time Boost Stone\"><title>24H Time Boost Stone</title><defs><linearGradient id=\"i-time_24h-a\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#8A9BFF\"/><stop offset=\"1\" stop-color=\"#2a2aa8\"/></linearGradient></defs><polygon points=\"20,3 44,3 61,20 61,44 44,61 20,61 3,44 3,20\" fill=\"url(#i-time_24h-a)\" stroke=\"#D7E2EA\" stroke-opacity=\".7\" stroke-width=\"2\"/><polygon points=\"24,12 40,12 32,24\" fill=\"#fff\"/><polygon points=\"32,24 24,36 40,36\" fill=\"#fff\" opacity=\".85\"/><path d=\"M22 11 H42 M22 37 H42\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\"/><text x=\"32\" y=\"55\" text-anchor=\"middle\" font-family=\"Kanit,sans-serif\" font-weight=\"800\" font-size=\"12\" fill=\"#fff\">24H</text></svg>", "id_card": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" width=\"128\" height=\"128\" role=\"img\" aria-label=\"Scholar ID Card\"><title>Scholar ID Card</title><defs><linearGradient id=\"i-id_card-a\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#4FA3FF\"/><stop offset=\"1\" stop-color=\"#0A3FB3\"/></linearGradient><linearGradient id=\"i-id_card-b\" x1=\"0\" y1=\"0\" x2=\".3\" y2=\"1\"><stop offset=\"0\" stop-color=\"#FFE98A\"/><stop offset=\"1\" stop-color=\"#D18A00\"/></linearGradient></defs><rect x=\"5\" y=\"14\" width=\"54\" height=\"36\" rx=\"6\" fill=\"url(#i-id_card-a)\" stroke=\"#BBCCD7\" stroke-width=\"2\"/><circle cx=\"19\" cy=\"28\" r=\"6\" fill=\"#fff\"/><path d=\"M9 44 C9 35 29 35 29 44Z\" fill=\"#fff\"/><rect x=\"34\" y=\"21\" width=\"18\" height=\"3\" rx=\"1.5\" fill=\"#fff\"/><rect x=\"34\" y=\"28\" width=\"13\" height=\"3\" rx=\"1.5\" fill=\"#fff\" opacity=\".6\"/><rect x=\"34\" y=\"36\" width=\"11\" height=\"8\" rx=\"2\" fill=\"url(#i-id_card-b)\"/><circle cx=\"5\" cy=\"32\" r=\"4\" fill=\"#0C0C0C\"/><circle cx=\"59\" cy=\"32\" r=\"4\" fill=\"#0C0C0C\"/></svg>"};
+var IT=[
+{id:'chest_silver',n:'Silver Chest',d:'Silver loot with a gem reward of 20–80.',p:100,c:'Chests',r:[20,80]},
+{id:'chest_gold',n:'Gold Chest',d:'Gold loot with a gem reward of 80–220.',p:250,c:'Chests',r:[80,220]},
+{id:'chest_deluxe',n:'Deluxe Epic Stash',d:'Holographic vault. 200–600 gems inside.',p:600,c:'Chests',r:[200,600]},
+{id:'wheel',n:'Spin Ticket',d:'One spin of the daily wheel: 10–100 gems.',p:60,c:'Chests',r:[10,100]},
+{id:'flask',n:'Scholar Flask',d:'Drink for an instant +100 XP.',p:120,c:'Potions',xp:100},
+{id:'elixir',n:'Elixir Bottle',d:'Radiant brew. Instant +250 XP.',p:260,c:'Potions',xp:250},
+{id:'heart',n:'Heart Refill',d:'Restore 1 life, up to a maximum of 5.',p:50,c:'Boosters'},
+{id:'shield_streak',n:'Streak Shield',d:'Protects your streak for one missed day.',p:150,c:'Boosters'},
+{id:'time_1h',n:'1H Time Boost',d:'2× XP for 1 hour.',p:80,c:'Boosters',h:1},
+{id:'time_3h',n:'3H Time Boost',d:'2× XP for 3 hours.',p:200,c:'Boosters',h:3},
+{id:'time_24h',n:'24H Time Boost',d:'2× XP for a full day.',p:500,c:'Boosters',h:24},
+{id:'id_card',n:'Scholar ID Card',d:'Ticket to change your player name.',p:300,c:'Boosters'},
+{id:'gem',n:'Gem Pouch',d:'100 gems. Demo purchase.',cash:'$0.99',g:100,c:'Gems'},
+{id:'gem',n:'Gem Sack',d:'550 gems. Demo purchase.',cash:'$4.99',g:550,c:'Gems',k:'gem2'},
+{id:'gem',n:'Gem Vault',d:'1200 gems. Demo purchase.',cash:'$9.99',g:1200,c:'Gems',k:'gem3'}];
+IT.forEach(function(x){x.k=x.k||x.id});
+var K='techno_store_v1',S={gems:1250,lives:3,xp:800,name:'Techno',shield:0,boost:0,inv:{}};
+try{var s=JSON.parse(localStorage.getItem(K));if(s)S=Object.assign(S,s)}catch(e){}
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
+var $=function(i){return document.getElementById(i)},tab=1,cat='All',cur=null,qty=1;
+function ic(id,z){return '<span class="i" style="width:'+z+'px;height:'+z+'px">'+ICONS[id]+'</span>'}
+function toast(t){var e=$('ts');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on')},2200)}
+function find(k){return IT.filter(function(x){return x.k===k})[0]}
+function price(x){return x.cash?x.cash:ic('gem',20)+x.p}
+function bar(){
+  $('bar').innerHTML='<div class="pill g">'+ic('gem',22)+S.gems+'</div><div class="pill">'+ic('heart',22)+S.lives+'/5</div><div class="pill">'+ic('xp',22)+S.xp+'</div><div class="pill">'+ic('shield_streak',22)+S.shield+'</div>';
+  $('who').textContent='@'+S.name.toLowerCase().replace(/\s+/g,'')+' · Scholar Store';
+}
+function render(){
+  bar();$('t1').className=tab==1?'on':'';$('t2').className=tab==2?'on':'';
+  var cats=['All','Chests','Potions','Boosters','Gems'];
+  $('chips').style.display=tab==1?'flex':'none';
+  $('chips').innerHTML=cats.map(function(c){return '<button class="chip'+(c==cat?' on':'')+'" data-cat="'+c+'">'+c+'</button>'}).join('');
+  var h='';
+  if(tab==1){
+    if(cat=='All')h+='<div class="feat" style="grid-column:1/-1" data-k="chest_deluxe">'+ic('chest_deluxe',96)+'<div><small>Epic deal</small><h3>Deluxe Epic Stash</h3><span class="price" style="width:auto;display:inline-flex">'+ic('gem',20)+'600</span></div></div>';
+    var last='';
+    IT.filter(function(x){return cat=='All'||x.c==cat}).forEach(function(x){
+      if(cat=='All'&&x.c!=last){h+='<div class="sec">'+x.c+'</div>';last=x.c}
+      h+='<div class="card" data-k="'+x.k+'"><div class="art">'+ic(x.id,70)+'</div>'+(S.inv[x.k]?'<span class="own">x'+S.inv[x.k]+'</span>':'')+'<b>'+x.n+'</b><small>'+x.d+'</small><span class="price">'+price(x)+'</span></div>';
+    });
+  }else{
+    var own=IT.filter(function(x){return S.inv[x.k]>0});
+    if(!own.length)h='<div class="empty">'+ic('chest_silver',90)+'<h4>Inventory is empty</h4><p>Items you buy from the store are kept here. Open chests, drink potions and activate boosters.</p><button class="price" id="gs" style="width:auto">Go to Store</button></div>';
+    own.forEach(function(x){h+='<div class="card" data-k="'+x.k+'"><div class="art">'+ic(x.id,70)+'</div><span class="own">x'+S.inv[x.k]+'</span><b>'+x.n+'</b><small>'+x.d+'</small><span class="price use">Use</span></div>'});
+  }
+  $('view').innerHTML=h;
+  if($('gs'))$('gs').onclick=function(){tab=1;render()};
+}
+function open(k){cur=find(k);qty=1;sheet();$('bd').classList.add('on');$('sh').classList.add('on')}
+function close(){$('bd').classList.remove('on');$('sh').classList.remove('on')}
+function sheet(){
+  var x=cur,h='<div class="art">'+ic(x.id,100)+'</div><h3>'+x.n+'</h3><p>'+x.d+(S.inv[x.k]?' You own '+S.inv[x.k]+'.':'')+'</p>';
+  if(tab==1){
+    var tot=x.cash?x.cash:(x.p*qty),ok=x.cash||S.gems>=x.p*qty;
+    h+='<div class="qty"><button data-q="-1">−</button><b>'+qty+'</b><button data-q="1">+</button></div><div class="tot">Total: '+(x.cash?x.cash:ic('gem',22)+tot)+'</div>'+(ok?'':'<div class="no">Not enough gems</div>')+'<button class="go" id="go"'+(ok?'':' disabled')+'>Confirm purchase</button>';
+  }else h+='<button class="go" id="go">Use one</button>';
+  $('sh').innerHTML=h;$('go').onclick=tab==1?buy:use;
+}
+function buy(){
+  var x=cur;
+  if(x.g){S.gems+=x.g*qty;toast('+'+(x.g*qty)+' gems added')}
+  else{if(S.gems<x.p*qty)return;S.gems-=x.p*qty;S.inv[x.k]=(S.inv[x.k]||0)+qty;toast(qty+' × '+x.n+' added to inventory')}
+  save();close();render();
+}
+function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+function use(){
+  var x=cur,m='';
+  if(!S.inv[x.k])return close();
+  if(x.r){var g=rnd(x.r[0],x.r[1]);S.gems+=g;m=x.n+': +'+g+' gems'}
+  else if(x.xp){S.xp+=x.xp;m='+'+x.xp+' XP'}
+  else if(x.id=='heart'){if(S.lives>=5)return toast('Lives already full');S.lives++;m='+1 life'}
+  else if(x.id=='shield_streak'){S.shield++;m='Streak shield armed'}
+  else if(x.h){S.boost=Math.max(Date.now(),S.boost)+x.h*36e5;m='2× XP for '+x.h+'h'}
+  else if(x.id=='id_card'){var n=prompt('New player name',S.name);if(!n||!n.trim())return;S.name=n.trim().slice(0,14);m='Name changed'}
+  S.inv[x.k]--;save();toast(m);
+  if(S.inv[x.k]>0)sheet();else close();
+  render();
+}
+function tick(){
+  var l=S.boost-Date.now(),b=$('bst');
+  if(l>0){b.classList.add('on');var s=Math.floor(l/1000),p=function(n){return(n<10?'0':'')+n};$('btm').textContent=p(Math.floor(s/3600))+':'+p(Math.floor(s%3600/60))+':'+p(s%60);if(!$('bic').innerHTML)$('bic').innerHTML=ICONS.time_1h}
+  else b.classList.remove('on')
+}
+document.addEventListener('click',function(e){
+  var t=e.target;
+  if(t.closest('[data-cat]')){cat=t.closest('[data-cat]').dataset.cat;return render()}
+  if(t.closest('[data-q]')){qty=Math.max(1,Math.min(99,qty+ +t.closest('[data-q]').dataset.q));return sheet()}
+  var c=t.closest('[data-k]');if(c&&!t.closest('.sheet'))open(c.dataset.k);
+});
+$('bd').onclick=close;$('t1').onclick=function(){tab=1;render()};$('t2').onclick=function(){tab=2;render()};
+render();tick();setInterval(tick,1000);
+})();
+</script></body></html>

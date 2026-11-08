@@ -201,7 +201,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
 
   return (
     <nav
-      className={`fixed bottom-0 left-0 right-0 z-40 ${themeStyles.bg} backdrop-blur-2xl ${themeStyles.border} px-2 py-2.5 safe-area-bottom select-none transition-all duration-300 overflow-hidden`}
+      className={`fixed bottom-0 left-0 right-0 z-40 md:hidden ${themeStyles.bg} backdrop-blur-2xl ${themeStyles.border} px-2 py-2.5 safe-area-bottom select-none transition-all duration-300 overflow-hidden`}
       style={{
         boxShadow: isNoGlowActive
           ? "0 -4px 14px rgba(0,0,0,0.8)"

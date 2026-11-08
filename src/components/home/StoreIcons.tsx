@@ -1,0 +1,548 @@
+import React from "react";
+
+export interface IconProps {
+  size?: number | string;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+export const GemSvg: React.FC<IconProps> = ({ size = 22, className, style }) => (
+  <svg
+    viewBox="0 0 64 64"
+    width={size}
+    height={size}
+    className={className}
+    style={style}
+    role="img"
+    aria-label="Diamonds (Gems)"
+  >
+    <defs>
+      <linearGradient id="i-gem-a" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#7DBDFF" />
+        <stop offset="1" stopColor="#0057E7" />
+      </linearGradient>
+      <linearGradient id="i-gem-b" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#DDEEFF" />
+        <stop offset="1" stopColor="#5CA4FF" />
+      </linearGradient>
+    </defs>
+    <polygon points="18,10 46,10 58,24 6,24" fill="url(#i-gem-b)" />
+    <polygon points="6,24 58,24 32,58" fill="url(#i-gem-a)" />
+    <path
+      d="M18 10 L26 24 L32 10 L38 24 L46 10 M26 24 L32 58 L38 24"
+      fill="none"
+      stroke="#fff"
+      strokeOpacity=".55"
+      strokeWidth="1.2"
+    />
+    <polygon points="14,22 20,12 25,12 18,22" fill="#fff" opacity=".85" />
+    <circle cx="48" cy="18" r="2" fill="#fff" />
+  </svg>
+);
+
+export const HeartSvg: React.FC<IconProps> = ({ size = 22, className, style }) => (
+  <svg
+    viewBox="0 0 64 64"
+    width={size}
+    height={size}
+    className={className}
+    style={style}
+    role="img"
+    aria-label="Energy Lives (Heart)"
+  >
+    <defs>
+      <linearGradient id="i-heart-a" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#FF7A7A" />
+        <stop offset="1" stopColor="#B3001B" />
+      </linearGradient>
+    </defs>
+    <path
+      d="M32 57 C10 41 6 26 12 17 C18 8 29 10 32 18 C35 10 46 8 52 17 C58 26 54 41 32 57Z"
+      fill="url(#i-heart-a)"
+      stroke="#5c0010"
+      strokeWidth="2.5"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M17 22 C17 16 24 14 28 18"
+      fill="none"
+      stroke="#fff"
+      strokeWidth="3.5"
+      strokeLinecap="round"
+      opacity=".7"
+    />
+  </svg>
+);
+
+export const XpSvg: React.FC<IconProps> = ({ size = 22, className, style }) => (
+  <svg
+    viewBox="0 0 64 64"
+    width={size}
+    height={size}
+    className={className}
+    style={style}
+    role="img"
+    aria-label="XP (Lightning Bolt)"
+  >
+    <defs>
+      <linearGradient id="i-xp-a" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#4FA3FF" />
+        <stop offset="1" stopColor="#0A3FB3" />
+      </linearGradient>
+      <linearGradient id="i-xp-b" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#FFF08A" />
+        <stop offset="1" stopColor="#FFB400" />
+      </linearGradient>
+    </defs>
+    <circle cx="32" cy="32" r="28" fill="url(#i-xp-a)" stroke="#BBCCD7" strokeWidth="3" />
+    <polygon
+      points="37,8 17,36 29,36 25,57 47,26 34,26"
+      fill="url(#i-xp-b)"
+      stroke="#8a5a00"
+      strokeWidth="1.5"
+      strokeLinejoin="round"
+    />
+    <ellipse cx="22" cy="16" rx="9" ry="4" fill="#fff" opacity=".25" transform="rotate(-30 22 16)" />
+  </svg>
+);
+
+export const ShieldStreakSvg: React.FC<IconProps> = ({ size = 22, className, style }) => (
+  <svg
+    viewBox="0 0 64 64"
+    width={size}
+    height={size}
+    className={className}
+    style={style}
+    role="img"
+    aria-label="Streak Shield"
+  >
+    <defs>
+      <linearGradient id="i-shield_streak-a" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#6FB4FF" />
+        <stop offset="1" stopColor="#0A47C8" />
+      </linearGradient>
+      <linearGradient id="i-shield_streak-b" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#FFC857" />
+        <stop offset="1" stopColor="#FF3D00" />
+      </linearGradient>
+    </defs>
+    <path
+      d="M32 3 L57 11 V31 C57 46 46 57 32 61 C18 57 7 46 7 31 V11Z"
+      fill="url(#i-shield_streak-a)"
+      stroke="#BBCCD7"
+      strokeWidth="3"
+      strokeLinejoin="round"
+    />
+    <path d="M32 12 L49 18 V31 C49 41 42 49 32 53 C22 49 15 41 15 31 V18Z" fill="#010B1F" opacity=".35" />
+    <path
+      d="M32 21 C33 29 41 32 41 40 C41 46 37 50 32 50 C27 50 23 46 23 40 C23 36 27 34 28 30 C30 32 30 34 30 35 C34 31 33 26 32 21Z"
+      fill="url(#i-shield_streak-b)"
+    />
+  </svg>
+);
+
+export const WheelSvg: React.FC<IconProps> = ({ size = 22, className, style }) => (
+  <svg
+    viewBox="0 0 64 64"
+    width={size}
+    height={size}
+    className={className}
+    style={style}
+    role="img"
+    aria-label="Wheel / Daily Bonus"
+  >
+    <path d="M32 34 L32.0 8.0 A26 26 0 0 1 50.4 15.6 Z" fill="#0057E7" />
+    <path d="M32 34 L50.4 15.6 A26 26 0 0 1 58.0 34.0 Z" fill="#06224d" />
+    <path d="M32 34 L58.0 34.0 A26 26 0 0 1 50.4 52.4 Z" fill="#1D6BFF" />
+    <path d="M32 34 L50.4 52.4 A26 26 0 0 1 32.0 60.0 Z" fill="#021436" />
+    <path d="M32 34 L32.0 60.0 A26 26 0 0 1 13.6 52.4 Z" fill="#4FA3FF" />
+    <path d="M32 34 L13.6 52.4 A26 26 0 0 1 6.0 34.0 Z" fill="#0a2a66" />
+    <path d="M32 34 L6.0 34.0 A26 26 0 0 1 13.6 15.6 Z" fill="#2f4fd0" />
+    <path d="M32 34 L13.6 15.6 A26 26 0 0 1 32.0 8.0 Z" fill="#010B1F" />
+    <circle cx="32" cy="34" r="27" fill="none" stroke="#D7E2EA" strokeWidth="3" />
+    <circle cx="32" cy="34" r="7" fill="#fff" />
+    <circle cx="32" cy="34" r="3.5" fill="#1D6BFF" />
+    <polygon points="26,1 38,1 32,13" fill="#FFE27A" stroke="#8a5a00" strokeWidth="1.5" strokeLinejoin="round" />
+  </svg>
+);
+
+export const ChestSilverSvg: React.FC<IconProps> = ({ size = 64, className, style }) => (
+  <svg
+    viewBox="0 0 64 64"
+    width={size}
+    height={size}
+    className={className}
+    style={style}
+    role="img"
+    aria-label="Silver Chest"
+  >
+    <defs>
+      <linearGradient id="i-chest_silver-a" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#F2F6FA" />
+        <stop offset="1" stopColor="#9AA5B1" />
+      </linearGradient>
+      <linearGradient id="i-chest_silver-b" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#C5CED8" />
+        <stop offset="1" stopColor="#5B6572" />
+      </linearGradient>
+    </defs>
+    <rect x="7" y="28" width="50" height="27" rx="4" fill="url(#i-chest_silver-b)" />
+    <path d="M7 30 V24 C7 14 18 9 32 9 C46 9 57 14 57 24 V30Z" fill="url(#i-chest_silver-a)" />
+    <rect x="7" y="27" width="50" height="5" fill="#7B8794" />
+    <rect x="14" y="10" width="5" height="45" fill="#7B8794" opacity=".75" />
+    <rect x="45" y="10" width="5" height="45" fill="#7B8794" opacity=".75" />
+    <rect x="26" y="26" width="12" height="14" rx="3" fill="#F5C542" stroke="#000" strokeOpacity=".3" />
+    <circle cx="32" cy="33" r="2" fill="#333" />
+    <circle cx="11" cy="35" r="1.8" fill="#F5C542" />
+    <circle cx="53" cy="35" r="1.8" fill="#F5C542" />
+    <circle cx="11" cy="50" r="1.8" fill="#F5C542" />
+    <circle cx="53" cy="50" r="1.8" fill="#F5C542" />
+  </svg>
+);
+
+export const ChestGoldSvg: React.FC<IconProps> = ({ size = 64, className, style }) => (
+  <svg
+    viewBox="0 0 64 64"
+    width={size}
+    height={size}
+    className={className}
+    style={style}
+    role="img"
+    aria-label="Gold Chest"
+  >
+    <defs>
+      <linearGradient id="i-chest_gold-a" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#FFE98A" />
+        <stop offset="1" stopColor="#D18A00" />
+      </linearGradient>
+      <linearGradient id="i-chest_gold-b" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#F0B429" />
+        <stop offset="1" stopColor="#9A5B00" />
+      </linearGradient>
+    </defs>
+    <rect x="7" y="28" width="50" height="27" rx="4" fill="url(#i-chest_gold-b)" />
+    <path d="M7 30 V24 C7 14 18 9 32 9 C46 9 57 14 57 24 V30Z" fill="url(#i-chest_gold-a)" />
+    <rect x="7" y="27" width="50" height="5" fill="#B87400" />
+    <rect x="14" y="10" width="5" height="45" fill="#B87400" opacity=".75" />
+    <rect x="45" y="10" width="5" height="45" fill="#B87400" opacity=".75" />
+    <rect x="26" y="26" width="12" height="14" rx="3" fill="#FFE27A" stroke="#000" strokeOpacity=".3" />
+    <circle cx="32" cy="33" r="2" fill="#333" />
+    <circle cx="11" cy="35" r="1.8" fill="#FFE27A" />
+    <circle cx="53" cy="35" r="1.8" fill="#FFE27A" />
+    <circle cx="11" cy="50" r="1.8" fill="#FFE27A" />
+    <circle cx="53" cy="50" r="1.8" fill="#FFE27A" />
+    <polygon points="32,10 38,16 32,24 26,16" fill="#E0115F" stroke="#fff" strokeWidth="1" />
+  </svg>
+);
+
+export const ChestDeluxeSvg: React.FC<IconProps> = ({ size = 64, className, style }) => (
+  <svg
+    viewBox="0 0 64 64"
+    width={size}
+    height={size}
+    className={className}
+    style={style}
+    role="img"
+    aria-label="Deluxe Epic Stash"
+  >
+    <defs>
+      <linearGradient id="i-chest_deluxe-a" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#9CFFF2" />
+        <stop offset="1" stopColor="#3D8BFF" />
+      </linearGradient>
+      <linearGradient id="i-chest_deluxe-b" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#4FA3FF" />
+        <stop offset="1" stopColor="#1a2a8c" />
+      </linearGradient>
+    </defs>
+    <circle cx="32" cy="34" r="30" fill="#7DF3FF" opacity=".25" />
+    <rect x="7" y="28" width="50" height="27" rx="4" fill="url(#i-chest_deluxe-b)" />
+    <path d="M7 30 V24 C7 14 18 9 32 9 C46 9 57 14 57 24 V30Z" fill="url(#i-chest_deluxe-a)" />
+    <rect x="7" y="27" width="50" height="5" fill="#7DF3FF" />
+    <rect x="14" y="10" width="5" height="45" fill="#7DF3FF" opacity=".75" />
+    <rect x="45" y="10" width="5" height="45" fill="#7DF3FF" opacity=".75" />
+    <rect x="26" y="26" width="12" height="14" rx="3" fill="#E8FBFF" stroke="#000" strokeOpacity=".3" />
+    <circle cx="32" cy="33" r="2" fill="#333" />
+    <circle cx="11" cy="35" r="1.8" fill="#E8FBFF" />
+    <circle cx="53" cy="35" r="1.8" fill="#E8FBFF" />
+    <circle cx="11" cy="50" r="1.8" fill="#E8FBFF" />
+    <circle cx="53" cy="50" r="1.8" fill="#E8FBFF" />
+    <polygon points="32,10 38,16 32,24 26,16" fill="#E0115F" stroke="#fff" strokeWidth="1" />
+    <polygon points="54,4 56,9 61,11 56,13 54,18 52,13 47,11 52,9" fill="#fff" />
+    <polygon points="8,6 9.5,10 14,11.5 9.5,13 8,17 6.5,13 2,11.5 6.5,10" fill="#fff" opacity=".8" />
+  </svg>
+);
+
+export const FlaskSvg: React.FC<IconProps> = ({ size = 64, className, style }) => (
+  <svg
+    viewBox="0 0 64 64"
+    width={size}
+    height={size}
+    className={className}
+    style={style}
+    role="img"
+    aria-label="Scholar Flask"
+  >
+    <defs>
+      <linearGradient id="i-flask-a" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#8EC5FF" />
+        <stop offset="1" stopColor="#0057E7" />
+      </linearGradient>
+    </defs>
+    <path
+      d="M25 6 H39 V10 H36 V24 L50 50 C53 57 48 59 44 59 H20 C16 59 11 57 14 50 L28 24 V10 H25Z"
+      fill="#DDEEFF"
+      fillOpacity=".25"
+      stroke="#BBCCD7"
+      strokeWidth="2.5"
+      strokeLinejoin="round"
+    />
+    <path d="M19.4 40 H44.6 L50 50 C53 57 48 59 44 59 H20 C16 59 11 57 14 50Z" fill="url(#i-flask-a)" />
+    <rect x="24" y="2" width="16" height="6" rx="2" fill="#8B5A2B" />
+    <circle cx="28" cy="48" r="2.5" fill="#fff" opacity=".8" />
+    <circle cx="36" cy="52" r="1.8" fill="#fff" opacity=".8" />
+  </svg>
+);
+
+export const ElixirSvg: React.FC<IconProps> = ({ size = 64, className, style }) => (
+  <svg
+    viewBox="0 0 64 64"
+    width={size}
+    height={size}
+    className={className}
+    style={style}
+    role="img"
+    aria-label="Elixir Bottle"
+  >
+    <defs>
+      <linearGradient id="i-elixir-a" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#7DFFE0" />
+        <stop offset="1" stopColor="#00A8FF" />
+      </linearGradient>
+    </defs>
+    <circle cx="32" cy="40" r="26" fill="#7DFFF0" opacity=".22" />
+    <rect x="27" y="9" width="10" height="16" fill="#DDEEFF" fillOpacity=".3" stroke="#BBCCD7" strokeWidth="2" />
+    <rect x="25" y="3" width="14" height="7" rx="2" fill="#8B5A2B" />
+    <circle cx="32" cy="42" r="18" fill="#DDEEFF" fillOpacity=".25" stroke="#BBCCD7" strokeWidth="2.5" />
+    <circle cx="32" cy="42" r="14.5" fill="url(#i-elixir-a)" />
+    <ellipse cx="26" cy="36" rx="4" ry="2.5" fill="#fff" opacity=".7" transform="rotate(-30 26 36)" />
+    <polygon points="44,18 45.5,22 50,23.5 45.5,25 44,29 42.5,25 38,23.5 42.5,22" fill="#fff" />
+  </svg>
+);
+
+export const Time1hSvg: React.FC<IconProps> = ({ size = 64, className, style }) => (
+  <svg
+    viewBox="0 0 64 64"
+    width={size}
+    height={size}
+    className={className}
+    style={style}
+    role="img"
+    aria-label="1H Time Boost Stone"
+  >
+    <defs>
+      <linearGradient id="i-time_1h-a" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#7DF3FF" />
+        <stop offset="1" stopColor="#0090C8" />
+      </linearGradient>
+    </defs>
+    <polygon
+      points="20,3 44,3 61,20 61,44 44,61 20,61 3,44 3,20"
+      fill="url(#i-time_1h-a)"
+      stroke="#D7E2EA"
+      strokeOpacity=".7"
+      strokeWidth="2"
+    />
+    <polygon points="24,12 40,12 32,24" fill="#fff" />
+    <polygon points="32,24 24,36 40,36" fill="#fff" opacity=".85" />
+    <path d="M22 11 H42 M22 37 H42" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+    <text x="32" y="55" textAnchor="middle" fontFamily="Kanit,sans-serif" fontWeight="800" fontSize="12" fill="#fff">
+      1H
+    </text>
+  </svg>
+);
+
+export const Time3hSvg: React.FC<IconProps> = ({ size = 64, className, style }) => (
+  <svg
+    viewBox="0 0 64 64"
+    width={size}
+    height={size}
+    className={className}
+    style={style}
+    role="img"
+    aria-label="3H Time Boost Stone"
+  >
+    <defs>
+      <linearGradient id="i-time_3h-a" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#6FB4FF" />
+        <stop offset="1" stopColor="#0A47C8" />
+      </linearGradient>
+    </defs>
+    <polygon
+      points="20,3 44,3 61,20 61,44 44,61 20,61 3,44 3,20"
+      fill="url(#i-time_3h-a)"
+      stroke="#D7E2EA"
+      strokeOpacity=".7"
+      strokeWidth="2"
+    />
+    <polygon points="24,12 40,12 32,24" fill="#fff" />
+    <polygon points="32,24 24,36 40,36" fill="#fff" opacity=".85" />
+    <path d="M22 11 H42 M22 37 H42" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+    <text x="32" y="55" textAnchor="middle" fontFamily="Kanit,sans-serif" fontWeight="800" fontSize="12" fill="#fff">
+      3H
+    </text>
+  </svg>
+);
+
+export const Time24hSvg: React.FC<IconProps> = ({ size = 64, className, style }) => (
+  <svg
+    viewBox="0 0 64 64"
+    width={size}
+    height={size}
+    className={className}
+    style={style}
+    role="img"
+    aria-label="24H Time Boost Stone"
+  >
+    <defs>
+      <linearGradient id="i-time_24h-a" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#8A9BFF" />
+        <stop offset="1" stopColor="#2a2aa8" />
+      </linearGradient>
+    </defs>
+    <polygon
+      points="20,3 44,3 61,20 61,44 44,61 20,61 3,44 3,20"
+      fill="url(#i-time_24h-a)"
+      stroke="#D7E2EA"
+      strokeOpacity=".7"
+      strokeWidth="2"
+    />
+    <polygon points="24,12 40,12 32,24" fill="#fff" />
+    <polygon points="32,24 24,36 40,36" fill="#fff" opacity=".85" />
+    <path d="M22 11 H42 M22 37 H42" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+    <text x="32" y="55" textAnchor="middle" fontFamily="Kanit,sans-serif" fontWeight="800" fontSize="12" fill="#fff">
+      24H
+    </text>
+  </svg>
+);
+
+export const IdCardSvg: React.FC<IconProps> = ({ size = 64, className, style }) => (
+  <svg
+    viewBox="0 0 64 64"
+    width={size}
+    height={size}
+    className={className}
+    style={style}
+    role="img"
+    aria-label="Scholar ID Card"
+  >
+    <defs>
+      <linearGradient id="i-id_card-a" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#4FA3FF" />
+        <stop offset="1" stopColor="#0A3FB3" />
+      </linearGradient>
+      <linearGradient id="i-id_card-b" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#FFE98A" />
+        <stop offset="1" stopColor="#D18A00" />
+      </linearGradient>
+    </defs>
+    <rect x="5" y="14" width="54" height="36" rx="6" fill="url(#i-id_card-a)" stroke="#BBCCD7" strokeWidth="2" />
+    <circle cx="19" cy="28" r="6" fill="#fff" />
+    <path d="M9 44 C9 35 29 35 29 44Z" fill="#fff" />
+    <rect x="34" y="21" width="18" height="3" rx="1.5" fill="#fff" />
+    <rect x="34" y="28" width="13" height="3" rx="1.5" fill="#fff" opacity=".6" />
+    <rect x="34" y="36" width="11" height="8" rx="2" fill="url(#i-id_card-b)" />
+    <circle cx="5" cy="32" r="4" fill="#0C0C0C" />
+    <circle cx="59" cy="32" r="4" fill="#0C0C0C" />
+  </svg>
+);
+
+export const TrophySvg: React.FC<IconProps> = ({ size = 22, className, style }) => (
+  <svg
+    viewBox="0 0 64 64"
+    width={size}
+    height={size}
+    className={className}
+    style={style}
+    role="img"
+    aria-label="Trophies"
+  >
+    <defs>
+      <linearGradient id="i-trophy-gold-a" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#FFE98A" />
+        <stop offset="1" stopColor="#D18A00" />
+      </linearGradient>
+      <linearGradient id="i-trophy-gold-b" x1="0" y1="0" x2=".3" y2="1">
+        <stop offset="0" stopColor="#FFF4B8" />
+        <stop offset="1" stopColor="#FFB300" />
+      </linearGradient>
+    </defs>
+    {/* Handles */}
+    <path
+      d="M12 18 C6 18 4 24 4 30 C4 37 9 40 16 40 L16 34 C12 34 9 32 9 29 C9 26 11 23 15 23 Z"
+      fill="url(#i-trophy-gold-a)"
+    />
+    <path
+      d="M52 18 C58 18 60 24 60 30 C60 37 55 40 48 40 L48 34 C52 34 55 32 55 29 C55 26 53 23 49 23 Z"
+      fill="url(#i-trophy-gold-a)"
+    />
+    {/* Cup Body */}
+    <path
+      d="M14 12 L50 12 L46 36 C43 45 35 48 32 48 C29 48 21 45 18 36 Z"
+      fill="url(#i-trophy-gold-b)"
+      stroke="#D18A00"
+      strokeWidth="1.5"
+    />
+    {/* Top Rim */}
+    <ellipse cx="32" cy="13" rx="18" ry="4" fill="#FFE98A" stroke="#BBCCD7" strokeWidth="1" />
+    {/* Specular Front Highlight */}
+    <path d="M22 20 L25 38 C27 41 29 43 31 43 L27 20 Z" fill="#fff" opacity=".45" />
+    {/* Stem */}
+    <rect x="28" y="47" width="8" height="6" rx="2" fill="url(#i-trophy-gold-a)" />
+    {/* Base */}
+    <polygon points="18,59 46,59 44,53 20,53" fill="url(#i-trophy-gold-b)" stroke="#D18A00" strokeWidth="1" />
+    <rect x="22" y="55" width="20" height="2" fill="#fff" opacity=".5" />
+  </svg>
+);
+
+export const RenderStoreIcon: React.FC<{ id: string; size?: number | string; className?: string }> = ({
+  id,
+  size = 64,
+  className,
+}) => {
+  switch (id) {
+    case "gem":
+      return <GemSvg size={size} className={className} />;
+    case "heart":
+      return <HeartSvg size={size} className={className} />;
+    case "xp":
+      return <XpSvg size={size} className={className} />;
+    case "shield_streak":
+    case "shield":
+      return <ShieldStreakSvg size={size} className={className} />;
+    case "wheel":
+      return <WheelSvg size={size} className={className} />;
+    case "chest_silver":
+      return <ChestSilverSvg size={size} className={className} />;
+    case "chest_gold":
+      return <ChestGoldSvg size={size} className={className} />;
+    case "chest_deluxe":
+      return <ChestDeluxeSvg size={size} className={className} />;
+    case "flask":
+      return <FlaskSvg size={size} className={className} />;
+    case "elixir":
+      return <ElixirSvg size={size} className={className} />;
+    case "time_1h":
+      return <Time1hSvg size={size} className={className} />;
+    case "time_3h":
+      return <Time3hSvg size={size} className={className} />;
+    case "time_24h":
+      return <Time24hSvg size={size} className={className} />;
+    case "id_card":
+      return <IdCardSvg size={size} className={className} />;
+    case "trophy":
+      return <TrophySvg size={size} className={className} />;
+    default:
+      return <GemSvg size={size} className={className} />;
+  }
+};

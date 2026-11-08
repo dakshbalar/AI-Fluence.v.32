@@ -1,378 +1,72 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useGamification } from "../../utils/gamificationStore";
-import { useEngagementStore, loadStoredStudentProfile } from "../../utils/engagementStore";
-import { addNameChangeCard } from "../../utils/nameChangeService";
+import { useEngagementStore } from "../../utils/engagementStore";
 import {
-  getStoredActiveBundleId,
-  persistActiveBundleId,
-} from "../../data/avatarSkinsData";
-import { X, Check, Edit3, Package, Sparkles } from "lucide-react";
-import {
-  fetchUserInventory,
-  addItemToInventory,
-  consumeInventoryItem,
-  InventoryItem,
-} from "../../services/inventoryService";
-import { auth } from "../../firebase";
+  GemSvg,
+  HeartSvg,
+  XpSvg,
+  ShieldStreakSvg,
+  Time1hSvg,
+  RenderStoreIcon,
+} from "./StoreIcons";
 
-interface StorePageProps {
-  diamonds: number;
-  onSpendDiamonds: (amount: number) => boolean;
-  onAddDiamonds: (amount: number) => void;
-  onAddXP: (amount: number) => void;
-  onActivateUnlimitedLives: (hours: number) => void;
-  onShowToast: (msg: string) => void;
-  themeColor?: string;
-}
-
-// ---------------------------------------------------------------------------
-// SVG ICONS EXACTLY REPLICATING TEMPLATE SPECS
-// ---------------------------------------------------------------------------
-
-export const GemIcon: React.FC<{ size?: number; className?: string }> = ({ size = 22, className = "" }) => (
-  <svg
-    viewBox="0 0 64 64"
-    fill="none"
-    style={{ width: size, height: size }}
-    className={className}
-  >
-    <path
-      d="M32 8 52 24 32 56 12 24Z"
-      fill="url(#gb)"
-      stroke="#D7E2EA"
-      strokeWidth="2"
-      strokeLinejoin="round"
-      strokeLinecap="round"
-    />
-    <path
-      d="M12 24h40M24 24l8-16 8 16-8 32zM24 24 32 56 40 24"
-      stroke="#fff"
-      strokeOpacity=".55"
-      strokeWidth="1.5"
-    />
-  </svg>
-);
-
-const CardIcon: React.FC = () => (
-  <svg viewBox="0 0 64 64" fill="none">
-    <rect x="5" y="12" width="54" height="36" rx="8" fill="url(#gd)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <circle cx="19" cy="27" r="6" fill="url(#gb)" />
-    <path d="M9 42c2-8 14-8 20 0z" fill="url(#gb)" />
-    <path d="M36 24h16M36 32h8" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M38 52l14-14 5 5-14 14-7 2z" fill="url(#gs)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-  </svg>
-);
-
-const Stone1hIcon: React.FC = () => (
-  <svg viewBox="0 0 64 64" fill="none">
-    <path d="M32 4 50 18 45 58H19L14 18Z" fill="url(#gb)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M14 18h36" stroke="#fff" strokeOpacity=".4" />
-    <circle cx="32" cy="36" r="12" fill="#010B1F" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M32 29v7l5 3" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-  </svg>
-);
-
-const Stone3hIcon: React.FC = () => (
-  <svg viewBox="0 0 64 64" fill="none">
-    <path d="M32 4 50 18 45 58H19L14 18Z" fill="url(#gb)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M14 18h36" stroke="#fff" strokeOpacity=".4" />
-    <circle cx="32" cy="36" r="12" fill="#010B1F" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M32 29v7l5 3" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <circle cx="32" cy="36" r="18" stroke="#fff" strokeDasharray="3 4" opacity=".8" />
-  </svg>
-);
-
-const Stone24hIcon: React.FC = () => (
-  <svg viewBox="0 0 64 64" fill="none">
-    <path d="M32 4 50 18 45 58H19L14 18Z" fill="url(#gb)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M14 18h36" stroke="#fff" strokeOpacity=".4" />
-    <path d="M7 32 14 22v26ZM57 32 50 22v26Z" fill="url(#gs)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <circle cx="32" cy="36" r="12" fill="#010B1F" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M26 30l12 12M38 30 26 42M32 28v16" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-  </svg>
-);
-
-const FlaskIcon: React.FC = () => (
-  <svg viewBox="0 0 64 64" fill="none">
-    <path d="M26 6h12v5h-2v12l14 23a6 6 0 0 1-5 10H19a6 6 0 0 1-5-10l14-23V11h-2z" fill="url(#gs)" fillOpacity=".25" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M20 40h24l6 8a4 4 0 0 1-3.5 6h-29A4 4 0 0 1 14 48z" fill="url(#gb)" />
-    <path d="M34 29l-7 10h5l-3 9 9-12h-5z" fill="#fff" />
-    <circle cx="40" cy="44" r="2" fill="#fff" opacity=".7" />
-  </svg>
-);
-
-const ElixirIcon: React.FC = () => (
-  <svg viewBox="0 0 64 64" fill="none">
-    <rect x="25" y="3" width="14" height="8" rx="2" fill="url(#gs)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M28 11h8v8c9 3 14 10 14 20 0 10-8 17-18 17S14 49 14 39c0-10 5-17 14-20z" fill="url(#gd)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M15 38c1 10 8 16 17 16s16-6 17-16c-9-4-25-4-34 0z" fill="url(#gb)" />
-    <path d="m32 30 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z" fill="#fff" />
-  </svg>
-);
-
-const StreakShieldIcon: React.FC = () => (
-  <svg viewBox="0 0 64 64" fill="none">
-    <path d="M32 4 53 12v18c0 14-9 24-21 30C20 54 11 44 11 30V12Z" fill="url(#gb)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M32 20c2 7 9 9 9 17a9 9 0 0 1-18 0c0-5 3-6 4-10 2 1 4 2 5 5 1-3 1-7 0-12z" fill="#fff" />
-  </svg>
-);
-
-const ChestSilverIcon: React.FC = () => (
-  <svg viewBox="0 0 64 64" fill="none">
-    <rect x="8" y="34" width="48" height="24" rx="4" fill="url(#gd)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M8 34v-6a24 14 0 0 1 48 0v6z" fill="url(#gs)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M22 16v42M42 16v42" stroke="#D7E2EA" strokeWidth="3" strokeLinecap="round" />
-    <rect x="27" y="31" width="10" height="12" rx="2" fill="url(#gs)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-  </svg>
-);
-
-const ChestGoldIcon: React.FC = () => (
-  <svg viewBox="0 0 64 64" fill="none">
-    <path d="M19 14 21 3l11 7 11-7 2 11z" fill="url(#gs)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <rect x="8" y="34" width="48" height="24" rx="4" fill="url(#gd)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M8 34v-6a24 14 0 0 1 48 0v6z" fill="url(#gb)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M22 16v42M42 16v42" stroke="#D7E2EA" strokeWidth="3" strokeLinecap="round" />
-    <rect x="27" y="31" width="10" height="12" rx="2" fill="url(#gs)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-  </svg>
-);
-
-const ChestDeluxeIcon: React.FC = () => (
-  <svg viewBox="0 0 64 64" fill="none">
-    <path d="M32 0l7 8-7 9-7-9z" fill="url(#gb)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M10 6l4 3M54 6l-4 3M6 18l5 1M58 18l-5 1" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <rect x="8" y="34" width="48" height="24" rx="4" fill="url(#gd)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M8 34v-6a24 14 0 0 1 48 0v6z" fill="url(#gb)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <path d="M22 16v42M42 16v42" stroke="#D7E2EA" strokeWidth="3" strokeLinecap="round" />
-    <rect x="27" y="31" width="10" height="12" rx="2" fill="url(#gs)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-  </svg>
-);
-
-const KingIcon: React.FC = () => (
-  <svg viewBox="0 0 64 64" fill="none">
-    <path d="M7 46 11 16l15 14 6-18 6 18 15-14 4 30z" fill="url(#gb)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <rect x="7" y="46" width="50" height="9" rx="3" fill="url(#gs)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <circle cx="11" cy="13" r="3" fill="#fff" />
-    <circle cx="32" cy="9" r="3" fill="#fff" />
-    <circle cx="53" cy="13" r="3" fill="#fff" />
-  </svg>
-);
-
-const NinjaIcon: React.FC = () => (
-  <svg viewBox="0 0 64 64" fill="none">
-    <circle cx="30" cy="34" r="22" fill="url(#gd)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <rect x="8" y="26" width="44" height="15" rx="6" fill="url(#gb)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <ellipse cx="21" cy="33" rx="5" ry="3" fill="#fff" />
-    <ellipse cx="39" cy="33" rx="5" ry="3" fill="#fff" />
-    <path d="M52 30l9-7M52 36l9 7" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-  </svg>
-);
-
-const RobotIcon: React.FC = () => (
-  <svg viewBox="0 0 64 64" fill="none">
-    <rect x="11" y="20" width="42" height="34" rx="10" fill="url(#gd)" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <rect x="17" y="29" width="30" height="13" rx="6.5" fill="url(#gb)" />
-    <circle cx="26" cy="35.5" r="3" fill="#fff" />
-    <circle cx="38" cy="35.5" r="3" fill="#fff" />
-    <path d="M32 20v-8M26 48h12" stroke="#D7E2EA" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    <circle cx="32" cy="9" r="3.5" fill="url(#gs)" />
-    <path d="M7 31v12M57 31v12" stroke="#D7E2EA" strokeWidth="4" strokeLinejoin="round" strokeLinecap="round" />
-  </svg>
-);
-
-const ICON_MAP: Record<string, React.ReactNode> = {
-  card: <CardIcon />,
-  s1: <Stone1hIcon />,
-  s3: <Stone3hIcon />,
-  s24: <Stone24hIcon />,
-  flask: <FlaskIcon />,
-  elixir: <ElixirIcon />,
-  shield: <StreakShieldIcon />,
-  c1: <ChestSilverIcon />,
-  c2: <ChestGoldIcon />,
-  c3: <ChestDeluxeIcon />,
-  king: <KingIcon />,
-  ninja: <NinjaIcon />,
-  robot: <RobotIcon />,
-};
-
-interface StoreCategoryItem {
+interface StoreItem {
   id: string;
-  name: string;
-  price: number;
-  desc: string;
-  tag?: string;
-  icon: string;
-  isHot?: boolean;
-  xpBonus?: number;
-  gemBonus?: number;
-  lifeHours?: number;
-  isRenamePass?: boolean;
-  isStreakFreeze?: boolean;
-  skinBundleId?: string;
+  k?: string;
+  n: string;
+  d: string;
+  p?: number;
+  cash?: string;
+  c: string;
+  r?: [number, number];
+  xp?: number;
+  g?: number;
+  h?: number;
 }
 
-interface StoreCategory {
-  num: string;
-  title: string;
-  items: StoreCategoryItem[];
-}
-
-const STORE_CATEGORIES: StoreCategory[] = [
-  {
-    num: "01",
-    title: "Identity Passes & Cards",
-    items: [
-      {
-        id: "name-change-card",
-        name: "Name Change Card",
-        price: 50,
-        desc: "Consumable pass to rename your scholar display handle across courses and leaderboards.",
-        icon: "card",
-        isRenamePass: true,
-      },
-    ],
-  },
-  {
-    num: "02",
-    title: "Life Stones · Unlimited Practice Lives",
-    items: [
-      {
-        id: "stone-1h",
-        name: "1-Hour Life Stone",
-        price: 50,
-        desc: "Grants 1 hour of continuous unlimited practice lives.",
-        icon: "s1",
-        lifeHours: 1,
-      },
-      {
-        id: "stone-3h",
-        name: "3-Hour Life Stone",
-        price: 120,
-        desc: "Grants 3 hours of continuous unlimited practice lives.",
-        tag: "Best Value",
-        icon: "s3",
-        isHot: true,
-        lifeHours: 3,
-      },
-      {
-        id: "stone-24h",
-        name: "24-Hour Rune Stone",
-        price: 350,
-        desc: "Grants a full 24 hours of unlimited practice lives.",
-        tag: "Legendary",
-        icon: "s24",
-        isHot: true,
-        lifeHours: 24,
-      },
-    ],
-  },
-  {
-    num: "03",
-    title: "XP Elixirs & Boosts",
-    items: [
-      {
-        id: "flask-200",
-        name: "Arcane XP Flask",
-        price: 40,
-        desc: "Instantly adds +200 XP to your learning level.",
-        icon: "flask",
-        xpBonus: 200,
-      },
-      {
-        id: "elixir-500",
-        name: "Grand XP Elixir",
-        price: 85,
-        desc: "Instantly adds +500 XP to your learning level.",
-        icon: "elixir",
-        xpBonus: 500,
-      },
-    ],
-  },
-  {
-    num: "04",
-    title: "Streak Protection",
-    items: [
-      {
-        id: "streak-shield",
-        name: "Streak Shield",
-        price: 60,
-        desc: "Protects your daily learning flame streak if you miss a day.",
-        icon: "shield",
-        isStreakFreeze: true,
-      },
-    ],
-  },
-  {
-    num: "05",
-    title: "Loot Chests",
-    items: [
-      {
-        id: "chest-silver",
-        name: "Silver Chest",
-        price: 35,
-        desc: "Unlocks instant loot (+60 XP & +15 gems).",
-        icon: "c1",
-        xpBonus: 60,
-        gemBonus: 15,
-      },
-      {
-        id: "chest-gold",
-        name: "Royal Crown Chest",
-        price: 75,
-        desc: "Unlocks royal loot (+150 XP & +35 gems).",
-        icon: "c2",
-        xpBonus: 150,
-        gemBonus: 35,
-      },
-      {
-        id: "chest-deluxe",
-        name: "Deluxe Chest",
-        price: 150,
-        desc: "Unlocks mythic loot (+300 XP & +70 gems).",
-        tag: "Mythic",
-        icon: "c3",
-        isHot: true,
-        xpBonus: 300,
-        gemBonus: 70,
-      },
-    ],
-  },
-  {
-    num: "06",
-    title: "Mascot Avatar Skins",
-    items: [
-      {
-        id: "skin-king",
-        name: "Algorithmic King",
-        price: 250,
-        desc: "A regal mascot skin fit for the ruler of all algorithms.",
-        tag: "Royal Skin",
-        icon: "king",
-        skinBundleId: "cyber_king",
-      },
-      {
-        id: "skin-ninja",
-        name: "Cyber Ninja",
-        price: 200,
-        desc: "Stealth cyberpunk mascot skin that strikes from the shadows.",
-        tag: "Stealth Cyberpunk",
-        icon: "ninja",
-        skinBundleId: "cyber_ninja",
-      },
-      {
-        id: "skin-robot",
-        name: "Silicon Titan",
-        price: 220,
-        desc: "Futuristic AI robot mascot skin built from pure silicon.",
-        tag: "Futuristic AI Robot",
-        icon: "robot",
-        skinBundleId: "terminator",
-      },
-    ],
-  },
+const IT: StoreItem[] = [
+  { id: "chest_silver", n: "Silver Chest", d: "Silver loot with a gem reward of 20–80.", p: 100, c: "Chests", r: [20, 80] },
+  { id: "chest_gold", n: "Gold Chest", d: "Gold loot with a gem reward of 80–220.", p: 250, c: "Chests", r: [80, 220] },
+  { id: "chest_deluxe", n: "Deluxe Epic Stash", d: "Holographic vault. 200–600 gems inside.", p: 600, c: "Chests", r: [200, 600] },
+  { id: "wheel", n: "Spin Ticket", d: "One spin of the daily wheel: 10–100 gems.", p: 60, c: "Chests", r: [10, 100] },
+  { id: "flask", n: "Scholar Flask", d: "Drink for an instant +100 XP.", p: 120, c: "Potions", xp: 100 },
+  { id: "elixir", n: "Elixir Bottle", d: "Radiant brew. Instant +250 XP.", p: 260, c: "Potions", xp: 250 },
+  { id: "heart", n: "Heart Refill", d: "Restore 1 life, up to a maximum of 5.", p: 50, c: "Boosters" },
+  { id: "shield_streak", n: "Streak Shield", d: "Protects your streak for one missed day.", p: 150, c: "Boosters" },
+  { id: "time_1h", n: "1H Time Boost", d: "2× XP for 1 hour.", p: 80, c: "Boosters", h: 1 },
+  { id: "time_3h", n: "3H Time Boost", d: "2× XP for 3 hours.", p: 200, c: "Boosters", h: 3 },
+  { id: "time_24h", n: "24H Time Boost", d: "2× XP for a full day.", p: 500, c: "Boosters", h: 24 },
+  { id: "id_card", n: "Scholar ID Card", d: "Ticket to change your player name.", p: 300, c: "Boosters" },
+  { id: "gem", n: "Gem Pouch", d: "100 gems. Demo purchase.", cash: "$0.99", g: 100, c: "Gems", k: "gem1" },
+  { id: "gem", n: "Gem Sack", d: "550 gems. Demo purchase.", cash: "$4.99", g: 550, c: "Gems", k: "gem2" },
+  { id: "gem", n: "Gem Vault", d: "1200 gems. Demo purchase.", cash: "$9.99", g: 1200, c: "Gems", k: "gem3" },
 ];
 
-const OWNED_SKINS_STORAGE_KEY = "dsa_user_owned_skins_v1";
+IT.forEach((x) => {
+  x.k = x.k || x.id;
+});
+
+interface StoreState {
+  gems: number;
+  lives: number;
+  xp: number;
+  name: string;
+  shield: number;
+  boost: number;
+  inv: Record<string, number>;
+}
+
+const STORAGE_KEY = "techno_store_v1";
+
+interface StorePageProps {
+  diamonds?: number;
+  onSpendDiamonds?: (amount: number) => boolean;
+  onAddDiamonds?: (amount: number) => void;
+  onAddXP?: (amount: number) => void;
+  onActivateUnlimitedLives?: (hours: number) => void;
+  onShowToast?: (msg: string) => void;
+  themeColor?: string;
+}
 
 export const StorePage: React.FC<StorePageProps> = ({
   diamonds,
@@ -382,363 +76,954 @@ export const StorePage: React.FC<StorePageProps> = ({
   onActivateUnlimitedLives,
   onShowToast,
 }) => {
-  const { state: gamificationState } = useGamification();
-  const currentXP = gamificationState?.xp ?? 0;
-
-  // View switch: "store" vs "inventory" (Bag)
-  const [storeView, setStoreView] = useState<"store" | "inventory">("store");
-
-  // User inventory state
-  const currentProfile = loadStoredStudentProfile();
-  const currentUserId = currentProfile?.userId || auth.currentUser?.uid || "guest_user";
-  const [userInventory, setUserInventory] = useState<InventoryItem[]>([]);
-
-  useEffect(() => {
-    fetchUserInventory(currentUserId).then(setUserInventory).catch(console.warn);
-  }, [currentUserId]);
-
-  // Track owned mascot skins
-  const [ownedSkinIds, setOwnedSkinIds] = useState<string[]>(() => {
-    try {
-      const stored = localStorage.getItem(OWNED_SKINS_STORAGE_KEY);
-      if (stored) return JSON.parse(stored);
-    } catch (e) {}
-    return [];
-  });
-
-  const [isBalBumping, setIsBalBumping] = useState(false);
-  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
-  const [newNameInput, setNewNameInput] = useState("");
+  const { state: gamificationState, addDiamonds: addStoreDiamonds, addXp: addStoreXp } = useGamification();
   const { profile, updateProfile } = useEngagementStore();
 
-  const triggerBalBump = () => {
-    setIsBalBumping(true);
-    setTimeout(() => setIsBalBumping(false), 400);
+  const [tab, setTab] = useState<1 | 2>(1); // 1: Store, 2: Inventory
+  const [cat, setCat] = useState<string>("All");
+  const [cur, setCur] = useState<StoreItem | null>(null);
+  const [qty, setQty] = useState<number>(1);
+  const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string>("");
+  const [isToastActive, setIsToastActive] = useState<boolean>(false);
+  const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Rename modal state for ID Card
+  const [isRenameOpen, setIsRenameOpen] = useState<boolean>(false);
+  const [renameInput, setRenameInput] = useState<string>("");
+
+  const [storeState, setStoreState] = useState<StoreState>(() => {
+    const defaultName = profile?.username || "Techno";
+    const defaultState: StoreState = {
+      gems: typeof diamonds === "number" ? diamonds : 1250,
+      lives: 3,
+      xp: gamificationState?.xp || 800,
+      name: defaultName,
+      shield: 0,
+      boost: 0,
+      inv: {},
+    };
+
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return {
+          ...defaultState,
+          ...parsed,
+          gems: typeof diamonds === "number" ? diamonds : (parsed.gems ?? 1250),
+          name: profile?.username || parsed.name || defaultName,
+        };
+      }
+    } catch (e) {
+      console.warn("Error reading store state from localStorage", e);
+    }
+    return defaultState;
+  });
+
+  // Sync external diamonds if changed
+  useEffect(() => {
+    if (typeof diamonds === "number" && diamonds !== storeState.gems) {
+      setStoreState((prev) => ({ ...prev, gems: diamonds }));
+    }
+  }, [diamonds]);
+
+  // Sync external username if changed
+  useEffect(() => {
+    if (profile?.username && profile.username !== storeState.name) {
+      setStoreState((prev) => ({ ...prev, name: profile.username }));
+    }
+  }, [profile?.username]);
+
+  // Save to localStorage whenever storeState updates
+  const saveState = (newState: StoreState) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
+    } catch (e) {
+      console.warn("Error saving store state", e);
+    }
   };
 
-  const handlePurchase = async (item: StoreCategoryItem) => {
-    if (diamonds < item.price) {
-      onShowToast("Not enough gems");
-      return;
-    }
-
-    const spent = onSpendDiamonds(item.price);
-    if (!spent) return;
-
-    triggerBalBump();
-
-    // Add item to user's unique inventory (Bag)
-    const updatedInv = await addItemToInventory(currentUserId, {
-      id: item.id,
-      name: item.name,
-      quantity: 1,
-      icon: item.icon,
-      desc: item.desc,
-      category: item.tag || "Store Purchase",
-    });
-    setUserInventory(updatedInv);
-
-    // 1. Name Change Card
-    if (item.isRenamePass) {
-      addNameChangeCard();
-      onShowToast(`${item.name} purchased & added to Bag · Rename unlocked`);
-      setIsRenameModalOpen(true);
-      return;
-    }
-
-    // 2. Life Stone
-    if (item.lifeHours) {
-      onActivateUnlimitedLives(item.lifeHours);
-      onShowToast(`${item.name} added to Bag & activated!`);
-      return;
-    }
-
-    // 3. XP Flask / Elixir
-    if (item.xpBonus && !item.gemBonus) {
-      onAddXP(item.xpBonus);
-      onShowToast(`${item.name} added to Bag · +${item.xpBonus} XP added`);
-      return;
-    }
-
-    // 4. Streak Shield
-    if (item.isStreakFreeze) {
-      onShowToast(`${item.name} added to Bag · Streak protected`);
-      return;
-    }
-
-    // 5. Loot Chests
-    if (item.gemBonus && item.xpBonus) {
-      onAddXP(item.xpBonus);
-      onAddDiamonds(item.gemBonus);
-      onShowToast(`${item.name} added to Bag · +${item.xpBonus} XP & +${item.gemBonus} gems`);
-      return;
-    }
-
-    // 6. Skins
-    if (item.skinBundleId) {
-      const updatedSkins = [...ownedSkinIds, item.skinBundleId];
-      setOwnedSkinIds(updatedSkins);
-      try {
-        localStorage.setItem(OWNED_SKINS_STORAGE_KEY, JSON.stringify(updatedSkins));
-      } catch (e) {}
-      persistActiveBundleId(item.skinBundleId);
-      onShowToast(`${item.name} added to Bag & equipped!`);
-      return;
-    }
-
-    onShowToast(`${item.name} purchased and stored in your Bag!`);
+  const showInternalToast = (msg: string) => {
+    setToastMessage(msg);
+    setIsToastActive(true);
+    if (onShowToast) onShowToast(msg);
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    toastTimeoutRef.current = setTimeout(() => {
+      setIsToastActive(false);
+    }, 2200);
   };
 
-  // Use or open item from Inventory Bag
-  const handleUseInventoryItem = async (invItem: InventoryItem) => {
-    const updated = await consumeInventoryItem(currentUserId, invItem.id);
-    setUserInventory(updated);
+  // 2x XP Boost countdown tick
+  const [boostRemaining, setBoostRemaining] = useState<string>("");
+  const isBoostActive = storeState.boost > Date.now();
 
-    if (invItem.id.includes("stone")) {
-      onActivateUnlimitedLives(1);
-      onShowToast(`⚡ Activated ${invItem.name} from Bag!`);
-    } else if (invItem.id.includes("flask") || invItem.id.includes("elixir")) {
-      onAddXP(100);
-      onShowToast(`✨ Consumed ${invItem.name} · +100 XP!`);
-    } else if (invItem.id.includes("chest")) {
-      onAddXP(150);
-      onAddDiamonds(25);
-      onShowToast(`🎁 Opened ${invItem.name} from Bag · +150 XP & +25 Gems!`);
-    } else if (invItem.id === "name-change-card") {
-      setIsRenameModalOpen(true);
-      onShowToast(`📝 Name Change Card used!`);
+  useEffect(() => {
+    const updateTick = () => {
+      const remainingMs = storeState.boost - Date.now();
+      if (remainingMs > 0) {
+        const s = Math.floor(remainingMs / 1000);
+        const pad = (n: number) => (n < 10 ? "0" : "") + n;
+        const formatted = `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
+        setBoostRemaining(formatted);
+      } else {
+        setBoostRemaining("");
+      }
+    };
+    updateTick();
+    const interval = setInterval(updateTick, 1000);
+    return () => clearInterval(interval);
+  }, [storeState.boost]);
+
+  const openSheet = (item: StoreItem) => {
+    setCur(item);
+    setQty(1);
+    setIsSheetOpen(true);
+  };
+
+  const closeSheet = () => {
+    setIsSheetOpen(false);
+  };
+
+  // Buy item flow
+  const handleBuy = () => {
+    if (!cur) return;
+    const x = cur;
+    const itemKey = x.k || x.id;
+
+    if (x.g) {
+      // Demo cash purchase
+      const addedGems = x.g * qty;
+      const updatedGems = storeState.gems + addedGems;
+      const updated: StoreState = { ...storeState, gems: updatedGems };
+      setStoreState(updated);
+      saveState(updated);
+      if (onAddDiamonds) onAddDiamonds(addedGems);
+      else if (addStoreDiamonds) addStoreDiamonds(addedGems);
+      showInternalToast(`+${addedGems} gems added`);
     } else {
-      onShowToast(`✅ Used ${invItem.name} from Bag.`);
+      const totalCost = (x.p || 0) * qty;
+      if (storeState.gems < totalCost) {
+        showInternalToast("Not enough gems");
+        return;
+      }
+      if (onSpendDiamonds && !onSpendDiamonds(totalCost)) {
+        showInternalToast("Transaction failed");
+        return;
+      }
+      const updatedGems = storeState.gems - totalCost;
+      const updatedInv = { ...storeState.inv, [itemKey]: (storeState.inv[itemKey] || 0) + qty };
+      const updated: StoreState = { ...storeState, gems: updatedGems, inv: updatedInv };
+      setStoreState(updated);
+      saveState(updated);
+      showInternalToast(`${qty} × ${x.n} added to inventory`);
+    }
+
+    closeSheet();
+  };
+
+  // Helper random
+  const rnd = (a: number, b: number) => a + Math.floor(Math.random() * (b - a + 1));
+
+  // Use item flow
+  const handleUse = () => {
+    if (!cur) return;
+    const x = cur;
+    const itemKey = x.k || x.id;
+    const currentQty = storeState.inv[itemKey] || 0;
+    if (currentQty <= 0) {
+      closeSheet();
+      return;
+    }
+
+    let msg = "";
+    let updatedGems = storeState.gems;
+    let updatedXp = storeState.xp;
+    let updatedLives = storeState.lives;
+    let updatedShield = storeState.shield;
+    let updatedBoost = storeState.boost;
+
+    if (x.r) {
+      const awardedGems = rnd(x.r[0], x.r[1]);
+      updatedGems += awardedGems;
+      if (onAddDiamonds) onAddDiamonds(awardedGems);
+      else if (addStoreDiamonds) addStoreDiamonds(awardedGems);
+      msg = `${x.n}: +${awardedGems} gems`;
+    } else if (x.xp) {
+      updatedXp += x.xp;
+      if (onAddXP) onAddXP(x.xp);
+      else if (addStoreXp) addStoreXp(x.xp);
+      msg = `+${x.xp} XP`;
+    } else if (x.id === "heart") {
+      if (updatedLives >= 5) {
+        showInternalToast("Lives already full");
+        return;
+      }
+      updatedLives += 1;
+      msg = "+1 life";
+    } else if (x.id === "shield_streak") {
+      updatedShield += 1;
+      msg = "Streak shield armed";
+    } else if (x.h) {
+      updatedBoost = Math.max(Date.now(), updatedBoost) + x.h * 3600000;
+      msg = `2× XP for ${x.h}h`;
+      if (onActivateUnlimitedLives) onActivateUnlimitedLives(x.h);
+    } else if (x.id === "id_card") {
+      setRenameInput(storeState.name);
+      setIsRenameOpen(true);
+      return;
+    }
+
+    const nextInv = { ...storeState.inv, [itemKey]: currentQty - 1 };
+    const updated: StoreState = {
+      ...storeState,
+      gems: updatedGems,
+      xp: updatedXp,
+      lives: updatedLives,
+      shield: updatedShield,
+      boost: updatedBoost,
+      inv: nextInv,
+    };
+    setStoreState(updated);
+    saveState(updated);
+    showInternalToast(msg);
+
+    if (nextInv[itemKey] > 0) {
+      // Refresh current sheet
+      setQty(1);
+    } else {
+      closeSheet();
     }
   };
 
-  const handleSaveNewName = () => {
-    const trimmed = newNameInput.trim();
-    if (trimmed.length >= 2) {
-      updateProfile({ username: trimmed });
-      onShowToast(`Handle updated to "${trimmed}"!`);
-      setIsRenameModalOpen(false);
-      setNewNameInput("");
-    }
+  const handleConfirmRename = () => {
+    const trimmed = renameInput.trim().slice(0, 14);
+    if (!trimmed) return;
+    const itemKey = "id_card";
+    const currentQty = storeState.inv[itemKey] || 0;
+    if (currentQty <= 0) return;
+
+    const nextInv = { ...storeState.inv, [itemKey]: currentQty - 1 };
+    const updated: StoreState = {
+      ...storeState,
+      name: trimmed,
+      inv: nextInv,
+    };
+    setStoreState(updated);
+    saveState(updated);
+    if (updateProfile) updateProfile({ username: trimmed });
+    showInternalToast(`Name changed to @${trimmed}`);
+    setIsRenameOpen(false);
+    closeSheet();
   };
+
+  const categories = ["All", "Chests", "Potions", "Boosters", "Gems"];
+
+  // Filter items
+  const filteredItems = IT.filter((x) => cat === "All" || x.c === cat);
+  const ownedItems = IT.filter((x) => (storeState.inv[x.k || x.id] || 0) > 0);
+
+  const sanitizedHandle = storeState.name.toLowerCase().replace(/\s+/g, "");
 
   return (
-    <main className="store-main select-none text-left">
-      <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
-        <defs>
-          <linearGradient id="gb" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#7DBDFF" />
-            <stop offset="1" stopColor="#0057E7" />
-          </linearGradient>
-          <linearGradient id="gs" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#fff" />
-            <stop offset="1" stopColor="#8fa3b5" />
-          </linearGradient>
-          <linearGradient id="gd" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#16327a" />
-            <stop offset="1" stopColor="#010B1F" />
-          </linearGradient>
-        </defs>
-      </svg>
+    <div className="scholar-store-root w-full min-h-screen bg-[#0C0C0C] text-[#D7E2EA] font-['Kanit',sans-serif] selection:bg-[#1D6BFF] selection:text-white select-none">
+      <style>{`
+        .scholar-store-root {
+          --fg: #D7E2EA;
+          --b2: #4FA3FF;
+          box-sizing: border-box;
+        }
+        .scholar-store-main {
+          max-width: 520px;
+          margin: 0 auto;
+          padding: 16px 16px 80px;
+          overflow-x: clip;
+        }
+        .scholar-hh {
+          background: linear-gradient(180deg, #646973, #BBCCD7);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          font-weight: 900;
+          text-transform: uppercase;
+          line-height: 1;
+          letter-spacing: -0.025em;
+        }
+        .scholar-bar {
+          display: flex;
+          gap: 8px;
+          position: sticky;
+          top: 0;
+          z-index: 20;
+          background: rgba(12, 12, 12, 0.92);
+          backdrop-filter: blur(8px);
+          padding: 10px 0;
+        }
+        .scholar-pill {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          border: 2px solid rgba(215, 226, 234, 0.35);
+          border-radius: 999px;
+          padding: 6px 8px;
+          font-weight: 700;
+          background: #111418;
+          font-size: 0.95rem;
+        }
+        .scholar-pill.g {
+          border-color: #1D6BFF;
+          color: #4FA3FF;
+        }
+        .scholar-title {
+          font-size: clamp(3rem, 15vw, 5rem);
+          margin: 18px 0 4px;
+        }
+        .scholar-sub {
+          font-weight: 300;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          font-size: 0.8rem;
+          opacity: 0.7;
+        }
+        .scholar-tabs {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 6px;
+          border: 2px solid rgba(215, 226, 234, 0.35);
+          border-radius: 999px;
+          padding: 5px;
+          margin: 20px 0 14px;
+        }
+        .scholar-tabs button {
+          border: 0;
+          background: none;
+          border-radius: 999px;
+          padding: 12px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          font-size: 0.85rem;
+          color: inherit;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .scholar-tabs button.on {
+          background: linear-gradient(123deg, #010B1F 7%, #0057E7 37%, #1D6BFF 72%, #4FA3FF 100%);
+          box-shadow: 4px 4px 12px #2170F1 inset;
+          color: #fff;
+        }
+        .scholar-chips {
+          display: flex;
+          gap: 8px;
+          overflow-x: auto;
+          padding-bottom: 6px;
+          margin-bottom: 12px;
+          scrollbar-width: none;
+        }
+        .scholar-chips::-webkit-scrollbar {
+          display: none;
+        }
+        .scholar-chip {
+          flex: none;
+          border: 2px solid rgba(215, 226, 234, 0.35);
+          background: none;
+          border-radius: 999px;
+          padding: 7px 16px;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          font-size: 0.75rem;
+          color: inherit;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .scholar-chip.on {
+          background: #D7E2EA;
+          color: #0C0C0C;
+          border-color: #D7E2EA;
+          font-weight: 700;
+        }
+        .scholar-boost {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          border: 2px solid #1D6BFF;
+          background: #06142e;
+          border-radius: 28px;
+          padding: 10px 16px;
+          margin-bottom: 12px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          font-size: 0.8rem;
+        }
+        .scholar-boost b {
+          margin-left: auto;
+          color: #4FA3FF;
+          font-variant-numeric: tabular-nums;
+        }
+        .scholar-feat {
+          border: 2px solid #4FA3FF;
+          border-radius: 40px;
+          padding: 20px;
+          margin-bottom: 16px;
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          background: radial-gradient(circle at 20% 30%, #0a2a66, #06090f);
+          box-shadow: 0 0 40px rgba(29, 107, 255, 0.25);
+          cursor: pointer;
+        }
+        .scholar-feat small {
+          font-size: 0.7rem;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: #4FA3FF;
+          font-weight: 600;
+        }
+        .scholar-feat h3 {
+          font-weight: 800;
+          text-transform: uppercase;
+          font-size: 1.3rem;
+          line-height: 1.1;
+          margin: 2px 0 10px;
+        }
+        .scholar-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+        }
+        .scholar-sec {
+          grid-column: 1 / -1;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          font-size: 0.9rem;
+          opacity: 0.8;
+          margin-top: 10px;
+        }
+        .scholar-card {
+          border: 2px solid rgba(215, 226, 234, 0.4);
+          border-radius: 32px;
+          padding: 14px;
+          background: #0f1216;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          gap: 6px;
+          position: relative;
+          cursor: pointer;
+          transition: transform 0.15s ease, border-color 0.2s ease;
+        }
+        .scholar-card:hover {
+          border-color: rgba(79, 163, 255, 0.7);
+        }
+        .scholar-card .art {
+          width: 100%;
+          aspect-ratio: 1.2;
+          display: grid;
+          place-items: center;
+          border-radius: 22px;
+          background: radial-gradient(circle at 50% 40%, #0a1a3d, #06090f);
+        }
+        .scholar-card b {
+          font-weight: 600;
+          text-transform: uppercase;
+          font-size: 0.85rem;
+          letter-spacing: 0.03em;
+          line-height: 1.2;
+        }
+        .scholar-card small {
+          font-weight: 300;
+          opacity: 0.65;
+          font-size: 0.72rem;
+          line-height: 1.35;
+          min-height: 2.7em;
+        }
+        .scholar-own {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          background: #1D6BFF;
+          border-radius: 999px;
+          font-size: 0.72rem;
+          font-weight: 700;
+          padding: 2px 9px;
+          color: #fff;
+        }
+        .scholar-price {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          font-weight: 700;
+          font-size: 1rem;
+          color: #fff;
+          border-radius: 999px;
+          padding: 8px 16px;
+          width: 100%;
+          border: 0;
+          background: linear-gradient(123deg, #010B1F 7%, #0057E7 37%, #1D6BFF 72%, #4FA3FF 100%);
+          box-shadow: 0 4px 4px rgba(1, 87, 231, 0.25), 4px 4px 12px #2170F1 inset;
+          outline: 2px solid #fff;
+          outline-offset: -3px;
+          cursor: pointer;
+        }
+        .scholar-price.use {
+          background: none;
+          box-shadow: none;
+          outline: 0;
+          border: 2px solid #D7E2EA;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          font-size: 0.8rem;
+        }
+        .scholar-empty {
+          grid-column: 1 / -1;
+          text-align: center;
+          border: 2px solid rgba(215, 226, 234, 0.4);
+          border-radius: 40px;
+          padding: 36px 20px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+        }
+        .scholar-empty h4 {
+          font-size: 1.4rem;
+          text-transform: uppercase;
+          font-weight: 700;
+        }
+        .scholar-empty p {
+          font-weight: 300;
+          opacity: 0.8;
+          line-height: 1.6;
+          font-size: 0.95rem;
+        }
+        .scholar-bd {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.65);
+          z-index: 50;
+        }
+        .scholar-sheet {
+          position: fixed;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          max-width: 520px;
+          margin: 0 auto;
+          z-index: 60;
+          background: #fff;
+          color: #0C0C0C;
+          border-radius: 40px 40px 0 0;
+          padding: 26px 22px 36px;
+          text-align: center;
+          box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+          animation: slideUp 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+        }
+        @keyframes slideUp {
+          from {
+            transform: translateY(100%);
+          }
+          to {
+            transform: translateY(0);
+          }
+        }
+        .scholar-sheet .art {
+          width: 150px;
+          height: 150px;
+          margin: 0 auto 6px;
+          border-radius: 32px;
+          display: grid;
+          place-items: center;
+          background: radial-gradient(circle, #0a1a3d, #06090f);
+        }
+        .scholar-sheet h3 {
+          font-weight: 900;
+          text-transform: uppercase;
+          font-size: 1.6rem;
+        }
+        .scholar-sheet p {
+          font-weight: 300;
+          line-height: 1.5;
+          margin: 6px 0 14px;
+          opacity: 0.75;
+        }
+        .scholar-qty {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 18px;
+          margin-bottom: 14px;
+        }
+        .scholar-qty button {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          border: 2px solid #0C0C0C;
+          background: none;
+          font-size: 1.4rem;
+          font-weight: 700;
+          cursor: pointer;
+        }
+        .scholar-qty b {
+          font-size: 1.6rem;
+          min-width: 2ch;
+        }
+        .scholar-tot {
+          display: flex;
+          justify-content: center;
+          gap: 8px;
+          align-items: center;
+          font-weight: 700;
+          margin-bottom: 14px;
+          font-size: 1.1rem;
+        }
+        .scholar-sheet .go {
+          width: 100%;
+          border: 0;
+          border-radius: 999px;
+          padding: 15px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: #fff;
+          background: linear-gradient(123deg, #010B1F 7%, #0057E7 37%, #1D6BFF 72%, #4FA3FF 100%);
+          box-shadow: 4px 4px 12px #2170F1 inset;
+          cursor: pointer;
+        }
+        .scholar-sheet .go:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+        .scholar-sheet .no {
+          color: #c0182b;
+          font-weight: 600;
+          font-size: 0.85rem;
+          margin-bottom: 10px;
+        }
+        .scholar-toast {
+          position: fixed;
+          left: 50%;
+          bottom: 28px;
+          transform: translate(-50%, 0);
+          background: #D7E2EA;
+          color: #0C0C0C;
+          font-weight: 600;
+          border-radius: 999px;
+          padding: 10px 22px;
+          z-index: 80;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          font-size: 0.78rem;
+          text-align: center;
+          max-width: 90vw;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+          transition: opacity 0.3s ease;
+        }
+      `}</style>
 
-      {/* STICKY HEADER */}
-      <header className="store-header flex items-center justify-between">
-        <span className="brand">Scholar Store & Bag</span>
-        <div className="store-pills flex items-center gap-2">
-          <div className="store-pill flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white font-mono text-xs">
-            <span style={{ opacity: 0.7 }}>XP</span>
-            <span>{currentXP.toLocaleString()}</span>
+      <main className="scholar-store-main">
+        {/* TOP STATUS BAR PILLS */}
+        <div className="scholar-bar" id="bar">
+          <div className="scholar-pill g">
+            <GemSvg size={22} />
+            <span>{storeState.gems}</span>
           </div>
-          <div className={`store-pill flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white font-mono text-xs ${isBalBumping ? "store-bump" : ""}`}>
-            <GemIcon size={20} />
-            <span>{diamonds.toLocaleString()}</span>
+          <div className="scholar-pill">
+            <HeartSvg size={22} />
+            <span>{storeState.lives}/5</span>
+          </div>
+          <div className="scholar-pill">
+            <XpSvg size={22} />
+            <span>{storeState.xp}</span>
+          </div>
+          <div className="scholar-pill">
+            <ShieldStreakSvg size={22} />
+            <span>{storeState.shield}</span>
           </div>
         </div>
-      </header>
 
-      {/* VIEW TOGGLE TABS */}
-      <div className="flex items-center justify-center my-4">
-        <div className="flex items-center gap-1 p-1 rounded-full border-2 border-white/15 bg-[#121418] shadow-lg">
+        {/* HERO TITLE & USER HANDLE */}
+        <h1 className="scholar-hh scholar-title">Store</h1>
+        <p className="scholar-sub" id="who">
+          @{sanitizedHandle} · Scholar Store
+        </p>
+
+        {/* DUAL SWITCH TABS */}
+        <div className="scholar-tabs">
           <button
-            onClick={() => setStoreView("store")}
-            className={`px-5 py-2 rounded-full font-black text-xs uppercase tracking-wider transition-all cursor-pointer ${
-              storeView === "store"
-                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
-                : "text-slate-400 hover:text-white"
-            }`}
+            id="t1"
+            className={tab === 1 ? "on" : ""}
+            onClick={() => setTab(1)}
           >
             Store
           </button>
           <button
-            onClick={() => setStoreView("inventory")}
-            className={`px-5 py-2 rounded-full font-black text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
-              storeView === "inventory"
-                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
-                : "text-slate-400 hover:text-white"
-            }`}
+            id="t2"
+            className={tab === 2 ? "on" : ""}
+            onClick={() => setTab(2)}
           >
-            <Package className="w-3.5 h-3.5" />
-            <span>Inventory Bag ({userInventory.reduce((acc, it) => acc + it.quantity, 0)})</span>
+            Inventory
           </button>
         </div>
-      </div>
 
-      {storeView === "store" ? (
-        <>
-          <h1 className="hero-heading store-h1 fade in">Store</h1>
-          <p className="store-sub fade in">Spend gems · power up your learning · store items in your Bag</p>
+        {/* 2X XP BOOST BANNER */}
+        {isBoostActive && (
+          <div className="scholar-boost" id="bst">
+            <Time1hSvg size={28} />
+            <span>2× XP Boost active</span>
+            <b id="btm">{boostRemaining}</b>
+          </div>
+        )}
 
-          <div id="shop">
-            {STORE_CATEGORIES.map((cat) => (
-              <section key={cat.num} className="store-section fade in">
-                <div className="store-sh">
-                  <span className="n hero-heading">{cat.num}</span>
-                  <h2>{cat.title}</h2>
-                </div>
-
-                <div className="store-grid">
-                  {cat.items.map((item) => {
-                    const isOwned = item.skinBundleId && ownedSkinIds.includes(item.skinBundleId);
-                    return (
-                      <div key={item.id} className="store-card">
-                        <div className="store-tile">
-                          {ICON_MAP[item.icon] || <GemIcon size={56} />}
-                        </div>
-
-                        {item.tag && (
-                          <span className={`store-tag ${item.isHot ? "hot" : ""}`}>
-                            {item.tag}
-                          </span>
-                        )}
-
-                        <h3>{item.name}</h3>
-                        <p>{item.desc}</p>
-
-                        <div className="store-buy">
-                          <div className="store-price">
-                            <GemIcon size={26} />
-                            <span>{item.price}</span>
-                          </div>
-                          <button
-                            onClick={() => handlePurchase(item)}
-                            disabled={Boolean(isOwned)}
-                            className="store-btn"
-                          >
-                            {isOwned ? "Owned" : "Buy & Bag"}
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
+        {/* CATEGORY CHIPS */}
+        {tab === 1 && (
+          <div className="scholar-chips" id="chips">
+            {categories.map((c) => (
+              <button
+                key={c}
+                className={`scholar-chip ${c === cat ? "on" : ""}`}
+                onClick={() => setCat(c)}
+              >
+                {c}
+              </button>
             ))}
           </div>
-        </>
-      ) : (
-        /* ================= INVENTORY BAG VIEW ================= */
-        <div className="space-y-4 fade in">
-          <div className="bg-[#121418] border-2 border-blue-500/40 rounded-[32px] p-6 shadow-2xl">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-blue-500/20 border border-blue-400/40 flex items-center justify-center text-blue-400">
-                <Package className="w-6 h-6" />
-              </div>
-              <div>
-                <h2 className="text-xl font-black uppercase text-white tracking-tight">Scholar's Inventory Bag</h2>
-                <p className="text-xs text-slate-400">Unique user storage for chests, stones, potions & passes</p>
-              </div>
-            </div>
+        )}
 
-            {userInventory.length === 0 ? (
-              <div className="text-center py-12 text-slate-400">
-                <Package className="w-12 h-12 mx-auto mb-3 opacity-40" />
-                <p className="text-sm font-bold">Your bag is empty!</p>
-                <p className="text-xs mt-1">Purchase items from the Store to store them here.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {userInventory.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-[#0b0e14] border border-white/10 rounded-2xl p-4 flex flex-col justify-between relative hover:border-blue-500/50 transition-all shadow-lg"
-                  >
-                    <div className="absolute top-3 right-3 bg-blue-600 text-white font-mono font-bold text-xs px-2.5 py-0.5 rounded-full shadow">
-                      x{item.quantity}
-                    </div>
-
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                        {ICON_MAP[item.icon] || <GemIcon size={32} />}
-                      </div>
-                      <div className="min-w-0 pr-6">
-                        <h3 className="font-bold text-sm text-white truncate">{item.name}</h3>
-                        <span className="text-[10px] text-blue-400 font-mono uppercase">{item.category}</span>
-                      </div>
-                    </div>
-
-                    <p className="text-xs text-slate-300/80 mb-4 line-clamp-2">{item.desc}</p>
-
-                    <button
-                      onClick={() => handleUseInventoryItem(item)}
-                      className="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-110 text-white font-black text-xs uppercase tracking-wider shadow-md cursor-pointer active:scale-95 transition-all flex items-center justify-center gap-1.5"
+        {/* MAIN GRID VIEW */}
+        <div className="scholar-grid" id="view">
+          {tab === 1 ? (
+            <>
+              {/* FEATURED DELUXE EPIC STASH */}
+              {cat === "All" && (
+                <div
+                  className="scholar-feat"
+                  style={{ gridColumn: "1 / -1" }}
+                  onClick={() => {
+                    const featItem = IT.find((x) => x.id === "chest_deluxe");
+                    if (featItem) openSheet(featItem);
+                  }}
+                >
+                  <RenderStoreIcon id="chest_deluxe" size={96} />
+                  <div>
+                    <small>Epic deal</small>
+                    <h3>Deluxe Epic Stash</h3>
+                    <span
+                      className="scholar-price"
+                      style={{ width: "auto", display: "inline-flex" }}
                     >
-                      <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                      <span>Use / Open Item</span>
-                    </button>
+                      <GemSvg size={20} />
+                      <span>600</span>
+                    </span>
                   </div>
-                ))}
-              </div>
+                </div>
+              )}
+
+              {/* SECTION GROUPED ITEMS */}
+              {(() => {
+                let lastSection = "";
+                return filteredItems.map((item) => {
+                  const showSectionHeader = cat === "All" && item.c !== lastSection;
+                  if (showSectionHeader) {
+                    lastSection = item.c;
+                  }
+                  const itemKey = item.k || item.id;
+                  const ownedCount = storeState.inv[itemKey] || 0;
+
+                  return (
+                    <React.Fragment key={itemKey}>
+                      {showSectionHeader && (
+                        <div className="scholar-sec">{item.c}</div>
+                      )}
+                      <div
+                        className="scholar-card"
+                        onClick={() => openSheet(item)}
+                      >
+                        <div className="art">
+                          <RenderStoreIcon id={item.id} size={70} />
+                        </div>
+                        {ownedCount > 0 && (
+                          <span className="scholar-own">x{ownedCount}</span>
+                        )}
+                        <b>{item.n}</b>
+                        <small>{item.d}</small>
+                        <span className="scholar-price">
+                          {item.cash ? (
+                            item.cash
+                          ) : (
+                            <>
+                              <GemSvg size={20} />
+                              <span>{item.p}</span>
+                            </>
+                          )}
+                        </span>
+                      </div>
+                    </React.Fragment>
+                  );
+                });
+              })()}
+            </>
+          ) : (
+            /* INVENTORY VIEW */
+            <>
+              {ownedItems.length === 0 ? (
+                <div className="scholar-empty">
+                  <RenderStoreIcon id="chest_silver" size={90} />
+                  <h4>Inventory is empty</h4>
+                  <p>
+                    Items you buy from the store are kept here. Open chests, drink
+                    potions and activate boosters.
+                  </p>
+                  <button
+                    className="scholar-price"
+                    style={{ width: "auto" }}
+                    onClick={() => setTab(1)}
+                  >
+                    Go to Store
+                  </button>
+                </div>
+              ) : (
+                ownedItems.map((item) => {
+                  const itemKey = item.k || item.id;
+                  const count = storeState.inv[itemKey] || 0;
+                  return (
+                    <div
+                      key={itemKey}
+                      className="scholar-card"
+                      onClick={() => openSheet(item)}
+                    >
+                      <div className="art">
+                        <RenderStoreIcon id={item.id} size={70} />
+                      </div>
+                      <span className="scholar-own">x{count}</span>
+                      <b>{item.n}</b>
+                      <small>{item.d}</small>
+                      <span className="scholar-price use">Use</span>
+                    </div>
+                  );
+                })
+              )}
+            </>
+          )}
+        </div>
+      </main>
+
+      {/* BOTTOM SHEET MODAL */}
+      {isSheetOpen && cur && (
+        <>
+          <div className="scholar-bd" onClick={closeSheet} />
+          <div className="scholar-sheet">
+            <div className="art">
+              <RenderStoreIcon id={cur.id} size={100} />
+            </div>
+            <h3>{cur.n}</h3>
+            <p>
+              {cur.d}
+              {storeState.inv[cur.k || cur.id]
+                ? ` You own ${storeState.inv[cur.k || cur.id]}.`
+                : ""}
+            </p>
+
+            {tab === 1 ? (
+              <>
+                <div className="scholar-qty">
+                  <button
+                    onClick={() => setQty((prev) => Math.max(1, prev - 1))}
+                  >
+                    −
+                  </button>
+                  <b>{qty}</b>
+                  <button
+                    onClick={() => setQty((prev) => Math.min(99, prev + 1))}
+                  >
+                    +
+                  </button>
+                </div>
+                <div className="scholar-tot">
+                  <span>Total:</span>
+                  {cur.cash ? (
+                    cur.cash
+                  ) : (
+                    <>
+                      <GemSvg size={22} />
+                      <span>{(cur.p || 0) * qty}</span>
+                    </>
+                  )}
+                </div>
+                {Boolean(!cur.cash && storeState.gems < (cur.p || 0) * qty) && (
+                  <div className="no">Not enough gems</div>
+                )}
+                <button
+                  className="go"
+                  disabled={Boolean(!cur.cash && storeState.gems < (cur.p || 0) * qty)}
+                  onClick={handleBuy}
+                >
+                  Confirm purchase
+                </button>
+              </>
+            ) : (
+              <button className="go" onClick={handleUse}>
+                Use one
+              </button>
             )}
           </div>
-        </div>
+        </>
       )}
 
-      {/* Name Change Modal */}
-      {isRenameModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0C0C0C] border-2 border-[#D7E2EA] rounded-3xl p-6 max-w-sm w-full shadow-2xl relative">
+      {/* RENAME MODAL FOR SCHOLAR ID CARD */}
+      {isRenameOpen && (
+        <>
+          <div className="scholar-bd" onClick={() => setIsRenameOpen(false)} />
+          <div className="scholar-sheet">
+            <div className="art">
+              <RenderStoreIcon id="id_card" size={100} />
+            </div>
+            <h3>Change Player Name</h3>
+            <p>Choose your new scholar display handle (up to 14 characters).</p>
+            <div style={{ marginBottom: 16 }}>
+              <input
+                type="text"
+                value={renameInput}
+                onChange={(e) => setRenameInput(e.target.value)}
+                maxLength={14}
+                placeholder="New name..."
+                style={{
+                  width: "100%",
+                  padding: "12px 18px",
+                  borderRadius: 999,
+                  border: "2px solid #0C0C0C",
+                  fontSize: "1.1rem",
+                  fontWeight: 700,
+                  textAlign: "center",
+                  outline: "none",
+                  fontFamily: "inherit",
+                }}
+                autoFocus
+              />
+            </div>
             <button
-              onClick={() => setIsRenameModalOpen(false)}
-              className="absolute top-4 right-4 text-white/60 hover:text-white"
+              className="go"
+              disabled={!renameInput.trim()}
+              onClick={handleConfirmRename}
             >
-              <X className="w-5 h-5" />
+              Confirm Name Change
             </button>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-2xl bg-blue-500/20 flex items-center justify-center">
-                <Edit3 className="w-5 h-5 text-blue-400" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold uppercase text-white">Rename Scholar</h3>
-                <p className="text-xs text-white/60">Choose your new display handle</p>
-              </div>
-            </div>
-            <input
-              type="text"
-              placeholder={profile?.username || "Enter new handle..."}
-              value={newNameInput}
-              onChange={(e) => setNewNameInput(e.target.value)}
-              maxLength={24}
-              className="w-full bg-[#121418] border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-blue-400 mb-4 text-sm"
-              autoFocus
-            />
-            <div className="flex gap-3">
-              <button
-                onClick={() => setIsRenameModalOpen(false)}
-                className="flex-1 py-2.5 rounded-full border border-white/20 text-white/70 hover:bg-white/10 text-xs font-semibold uppercase tracking-wider transition-colors"
-              >
-                Keep for Later
-              </button>
-              <button
-                onClick={handleSaveNewName}
-                disabled={newNameInput.trim().length < 2}
-                className="flex-1 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white text-xs font-bold uppercase tracking-wider shadow-lg transition-colors"
-              >
-                Save Handle
-              </button>
-            </div>
           </div>
+        </>
+      )}
+
+      {/* TOAST PILL */}
+      {isToastActive && (
+        <div className="scholar-toast">
+          {toastMessage}
         </div>
       )}
-    </main>
+    </div>
   );
 };

@@ -70,8 +70,6 @@ interface AIFluenceJackLandingPageProps {
   handleAuthSubmit: (e: React.FormEvent) => Promise<void>;
   handleGoogleSignIn: () => Promise<void>;
   onNavigateToBootcamp: () => void;
-  onNavigateToZapline: () => void;
-  onNavigateToJack: () => void;
 }
 
 /* ==========================================================================
@@ -514,8 +512,6 @@ export const AIFluenceJackLandingPage: React.FC<AIFluenceJackLandingPageProps> =
   handleAuthSubmit,
   handleGoogleSignIn,
   onNavigateToBootcamp,
-  onNavigateToZapline,
-  onNavigateToJack,
 }) => {
   const marqueeSectionRef = useRef<HTMLDivElement | null>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
@@ -664,18 +660,6 @@ export const AIFluenceJackLandingPage: React.FC<AIFluenceJackLandingPageProps> =
             >
               <span>🎓</span> Student Registration
             </button>
-            <button
-              onClick={onNavigateToZapline}
-              className="text-cyan-400 font-bold uppercase tracking-wider text-xs lg:text-sm hover:text-white transition-colors cursor-pointer flex items-center gap-1.5"
-            >
-              <span>⚡</span> Zapline
-            </button>
-            <button
-              onClick={onNavigateToJack}
-              className="text-slate-300 font-bold uppercase tracking-wider text-xs lg:text-sm hover:text-white transition-colors cursor-pointer flex items-center gap-1.5"
-            >
-              <span>🎨</span> Jack 3D
-            </button>
           </div>
 
           {/* Right: Sign In / Menu Button */}
@@ -728,24 +712,6 @@ export const AIFluenceJackLandingPage: React.FC<AIFluenceJackLandingPageProps> =
               className="text-left text-sm font-bold uppercase tracking-wider text-sky-400 flex items-center gap-2"
             >
               <span>🎓</span> Student Registration
-            </button>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onNavigateToZapline();
-              }}
-              className="text-left text-sm font-bold uppercase tracking-wider text-cyan-400"
-            >
-              ⚡ Zapline Hero
-            </button>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onNavigateToJack();
-              }}
-              className="text-left text-sm font-bold uppercase tracking-wider text-slate-300"
-            >
-              🎨 Jack (3D Creator)
             </button>
             <div className="pt-2 border-t border-white/10 flex gap-2">
               <button
