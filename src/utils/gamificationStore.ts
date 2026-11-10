@@ -3,6 +3,7 @@ import { doc, getDoc, setDoc, onSnapshot, serverTimestamp } from "firebase/fires
 import { auth, db } from "../lib/firebase";
 import { getOrGenerateUniqueUserCode } from "../services/userCodeService";
 import { completeLevelAndUnlockNext, saveCourseEnrollment } from "../services/progressionService";
+import { recordLevelAttemptAndCompletion } from "../services/learningTrackerService";
 import { getOrCreateUserCode } from "./userCodeGenerator";
 
 export interface FriendItem {
@@ -503,6 +504,22 @@ export function useGamification() {
         console.warn("Error completing level in Firestore:", err);
       });
     }
+
+    // Record level attempt & daily quest progress in Firestore & localStorage
+    const trackingCourseId = historyInfo?.courseId || (numId >= 700 ? "generative_ai" : "dsa");
+    const trackingLevelTitle = historyInfo?.levelTitle || `Level ${levelId}`;
+    const trackingScore = starCount === 3 ? 100 : starCount === 2 ? 80 : starCount === 1 ? 60 : 40;
+
+    recordLevelAttemptAndCompletion({
+      courseId: trackingCourseId,
+      levelId,
+      levelTitle: trackingLevelTitle,
+      stars: starCount,
+      completed: true,
+      scorePercent: trackingScore,
+      mistakes: starCount === 3 ? 0 : starCount === 2 ? 1 : 3,
+      livesUsed: 1,
+    }).catch((err) => console.warn("Error recording level attempt tracking:", err));
 
     updateState((prev) => {
       const isNewCompletion = !targetKeys.some(k => prev.completedLevels[k]);

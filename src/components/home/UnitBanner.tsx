@@ -48,10 +48,18 @@ export const UnitBanner: React.FC<UnitBannerProps> = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Map themeColor or courseName to track key for data-track attributes
-  const trackKey = (themeColor === "yellow" || themeColor === "amber" || courseName.toLowerCase().includes("everyone"))
+  const trackKey = (themeColor === "purple" || courseName.toLowerCase().includes("dsa") || courseName.toLowerCase().includes("cpp") || courseName.toLowerCase().includes("data"))
+    ? "dsa"
+    : (themeColor === "yellow" || themeColor === "amber" || courseName.toLowerCase().includes("everyone"))
     ? "everyone"
     : (themeColor === "blue" || courseName.toLowerCase().includes("genai") || courseName.toLowerCase().includes("generative"))
     ? "genai"
+    : (themeColor === "green" || themeColor === "emerald")
+    ? "green"
+    : (themeColor === "red")
+    ? "red"
+    : themeColor === "cyan"
+    ? "cyan"
     : "dsa";
 
   return (
@@ -78,7 +86,7 @@ export const UnitBanner: React.FC<UnitBannerProps> = ({
         </div>
 
         {/* Action Square Buttons (.sb & .sq) */}
-        <div className="flex gap-2 shrink-0 items-center">
+        <div className="sb flex gap-1.5 sm:gap-2 shrink-0 items-center flex-nowrap">
           {onPrevSection && sectionNumber > 1 && (
             <button
               onClick={onPrevSection}

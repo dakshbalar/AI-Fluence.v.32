@@ -563,3 +563,6 @@ export const RenderStoreIcon: React.FC<{ id: string; size?: number | string; cla
       return <GemSvg size={size} className={className} />;
   }
 };
+
+export const StoreIcon = RenderStoreIcon;
+

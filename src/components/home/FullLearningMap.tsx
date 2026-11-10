@@ -81,16 +81,18 @@ export const FullLearningMap: React.FC<FullLearningMapProps> = ({
   // Chest claimed state tracking
   const [isChestClaimed, setIsChestClaimed] = useState<boolean>(false);
 
-  // Normalize active track key for data-track CSS variables ("everyone", "genai", "dsa")
-  // Generative AI -> "genai" (Blue)
-  // DSA -> "dsa" (Purple)
-  // AI for Everyone -> "everyone" (Yellow)
+  // Normalize active track key for data-track CSS variables ("everyone", "genai", "dsa", "green", "red", "cyan")
   const trackKey = useMemo(() => {
     const key = (courseId || "").toLowerCase();
-    if (key === "generative_ai" || key.includes("genai") || key.includes("generative")) return "genai";
-    if (key === "ai_for_everyone" || key.includes("everyone")) return "everyone";
+    const theme = (themeColor || "").toLowerCase();
+    if (key === "generative_ai" || key.includes("genai") || key.includes("generative") || theme === "blue") return "genai";
+    if (key === "ai_for_everyone" || key.includes("everyone") || theme === "yellow" || theme === "amber") return "everyone";
+    if (key === "dsa" || key.includes("dsa") || key.includes("cpp") || key.includes("data") || theme === "purple") return "dsa";
+    if (theme === "green" || theme === "emerald") return "green";
+    if (theme === "red" || theme === "rose") return "red";
+    if (theme === "cyan") return "cyan";
     return "dsa";
-  }, [courseId]);
+  }, [courseId, themeColor]);
 
   // Current active section derived from activeSectionNumber
   const currentSection: CourseSection = useMemo(() => {
@@ -326,11 +328,11 @@ export const FullLearningMap: React.FC<FullLearningMapProps> = ({
       data-track={trackKey}
     >
       {/* Centered Wrap Container (.wrap) responsive for mobile, tablet, and desktop */}
-      <div className="wrap w-full max-w-[520px] md:max-w-[620px] lg:max-w-[700px] mx-auto px-2 sm:px-4 pt-4 pb-36 relative">
+      <div className="wrap w-full max-w-[520px] md:max-w-[620px] lg:max-w-[700px] mx-auto px-2 sm:px-4 pt-1 pb-36 relative">
         {/* =========================================================================
             1. TOP TABS: QUESTIONS vs THEORY (.tabs)
             ========================================================================= */}
-        <div className="tabs">
+        <div className="tabs !mt-1.5 !mb-3">
           <button
             onClick={() => {
               setActiveTab("q");

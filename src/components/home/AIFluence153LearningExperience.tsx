@@ -39,6 +39,7 @@ import { TheoryDeckSlideModal } from "./TheoryDeckSlideModal";
 import { QuizDeckPlayerModal } from "./QuizDeckPlayerModal";
 import { UsedQuestionsRegistryModal } from "./UsedQuestionsRegistryModal";
 import { useGamification } from "../../utils/gamificationStore";
+import { recordLevelAttemptAndCompletion } from "../../services/learningTrackerService";
 
 const LEVEL_PROGRESS_STORAGE_KEY = "aifluence_153_progress_v1";
 
@@ -68,7 +69,7 @@ export const AIFluence153LearningExperience: React.FC = () => {
   const [isQuizModalOpen, setIsQuizModalOpen] = useState<boolean>(false);
   const [isRegistryModalOpen, setIsRegistryModalOpen] = useState<boolean>(false);
 
-  const { addXp, addDiamonds } = useGamification();
+  const { addXp, addDiamonds, completeLevelState } = useGamification();
 
   // Progress state: Level completion & stars
   const [progress, setProgress] = useState<StoredLevelProgress>(() => {
@@ -185,8 +186,32 @@ export const AIFluence153LearningExperience: React.FC = () => {
     }
 
     saveProgress(newProgress);
-    addXp(50 + starsEarned * 15);
-    addDiamonds(starsEarned === 3 ? 5 : 2);
+    const courseId = selectedCourseId === "genai" ? "generative_ai" : selectedCourseId;
+    const levelTitle = levelInfo?.level.title || levelId;
+
+    completeLevelState(levelId, starsEarned, 50 + starsEarned * 15, undefined, {
+      courseId,
+      courseName: currentCourse.course_name,
+      levelTitle,
+      trophiesGained: 25,
+      diamondsGained: starsEarned === 3 ? 5 : 2,
+    });
+
+    const totalQ = 10;
+    const correctCount = Math.min(totalQ, Math.max(0, score));
+    const scorePct = Math.round((correctCount / totalQ) * 100);
+
+    recordLevelAttemptAndCompletion({
+      courseId,
+      levelId,
+      levelTitle,
+      stars: starsEarned,
+      completed: true,
+      scorePercent: scorePct,
+      mistakes: totalQ - correctCount,
+      livesUsed: 1,
+      flashcardsViewed: 10,
+    }).catch((err) => console.warn("Error recording 153 level completion:", err));
   };
 
   // Total stats for current book

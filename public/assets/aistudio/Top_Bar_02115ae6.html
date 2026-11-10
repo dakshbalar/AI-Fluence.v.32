@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Top Bar</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;box-sizing:border-box}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#0C0C0C;color:#D7E2EA;font-family:'Kanit',sans-serif;min-height:100%}
+.tb{position:sticky;top:0;z-index:30;display:flex;gap:8px;align-items:center;padding:10px 12px 10px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:linear-gradient(180deg,#0a1b3f 0%,#050c1c 100%);border-bottom:1px solid rgba(79,163,255,.4);box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 8px 30px rgba(0,87,231,.25)}
+.tb::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0,rgba(79,163,255,.18),transparent 70%);pointer-events:none}
+.st{--g:#4FA3FF;position:relative;flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;height:50px;border-radius:999px;border:2px solid color-mix(in srgb,var(--g) 40%,transparent);background:radial-gradient(circle at 50% 0,color-mix(in srgb,var(--g) 28%,transparent),transparent 75%),#0a1226;box-shadow:0 0 18px color-mix(in srgb,var(--g) 30%,transparent),inset 0 -6px 12px rgba(0,0,0,.35);font-weight:700;font-size:clamp(.82rem,3.8vw,1.05rem);color:#D7E2EA;cursor:pointer;font-family:inherit;transition:transform .15s;-webkit-tap-highlight-color:transparent}
+.st:active{transform:scale(.95)}
+.st .i{width:26px;height:26px;flex:none;display:block}.st .i svg{width:100%;height:100%;display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+.st span{font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:clip}
+.st.tr{--g:#FFC62E}.st.gm{--g:#4FA3FF}.st.hr{--g:#FF4B5C}.st.xp{--g:#2f7bff}
+.bump{animation:bmp .4s}@keyframes bmp{40%{transform:scale(1.14);box-shadow:0 0 30px var(--g),inset 0 -6px 12px rgba(0,0,0,.35)}}
+.hint{text-align:center;font-weight:300;text-transform:uppercase;letter-spacing:.15em;font-size:.8rem;opacity:.5;padding:40px 20px}
+@media(prefers-reduced-motion:reduce){.bump{animation:none}}
+</style></head><body>
+<header class="tb" id="tb">
+  <button class="st tr" id="tp"><i class="i"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="128" height="128" role="img" aria-label="Trophy"><title>Trophy</title><defs><linearGradient id="i-trophy-a" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#FFE98A"/><stop offset="1" stop-color="#D18A00"/></linearGradient><linearGradient id="i-trophy-b" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#B87400"/><stop offset="1" stop-color="#7a4a00"/></linearGradient></defs><path d="M18 12 H9 C9 26 13 30 21 32 M46 12 H55 C55 26 51 30 43 32" fill="none" stroke="url(#i-trophy-a)" stroke-width="4" stroke-linecap="round"/><path d="M17 8 H47 V26 C47 37 40 43 32 43 C24 43 17 37 17 26Z" fill="url(#i-trophy-a)"/><rect x="28" y="42" width="8" height="9" fill="url(#i-trophy-a)"/><rect x="18" y="50" width="28" height="9" rx="3" fill="url(#i-trophy-b)"/><rect x="17" y="8" width="30" height="4" fill="#fff" opacity=".5"/><path d="M22 15 V26 C22 32 25 35 28 37" fill="none" stroke="#fff" stroke-width="3" opacity=".6" stroke-linecap="round"/></svg></i><span></span></button>
+  <button class="st gm" id="pg"><i class="i"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="128" height="128" role="img" aria-label="Diamonds (Gems)"><title>Diamonds (Gems)</title><defs><linearGradient id="i-gem-a" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#7DBDFF"/><stop offset="1" stop-color="#0057E7"/></linearGradient><linearGradient id="i-gem-b" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#DDEEFF"/><stop offset="1" stop-color="#5CA4FF"/></linearGradient></defs><polygon points="18,10 46,10 58,24 6,24" fill="url(#i-gem-b)"/><polygon points="6,24 58,24 32,58" fill="url(#i-gem-a)"/><path d="M18 10 L26 24 L32 10 L38 24 L46 10 M26 24 L32 58 L38 24" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.2"/><polygon points="14,22 20,12 25,12 18,22" fill="#fff" opacity=".85"/><circle cx="48" cy="18" r="2" fill="#fff"/></svg></i><span></span></button>
+  <button class="st hr" id="ph"><i class="i"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="128" height="128" role="img" aria-label="Energy Lives (Heart)"><title>Energy Lives (Heart)</title><defs><linearGradient id="i-heart-a" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#FF7A7A"/><stop offset="1" stop-color="#B3001B"/></linearGradient></defs><path d="M32 57 C10 41 6 26 12 17 C18 8 29 10 32 18 C35 10 46 8 52 17 C58 26 54 41 32 57Z" fill="url(#i-heart-a)" stroke="#5c0010" stroke-width="2.5" stroke-linejoin="round"/><path d="M17 22 C17 16 24 14 28 18" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity=".7"/></svg></i><span></span></button>
+  <button class="st xp" id="px"><i class="i"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="128" height="128" role="img" aria-label="XP (Lightning Bolt)"><title>XP (Lightning Bolt)</title><defs><linearGradient id="i-xp-a" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#4FA3FF"/><stop offset="1" stop-color="#0A3FB3"/></linearGradient><linearGradient id="i-xp-b" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#FFF08A"/><stop offset="1" stop-color="#FFB400"/></linearGradient></defs><circle cx="32" cy="32" r="28" fill="url(#i-xp-a)" stroke="#BBCCD7" stroke-width="3"/><polygon points="37,8 17,36 29,36 25,57 47,26 34,26" fill="url(#i-xp-b)" stroke="#8a5a00" stroke-width="1.5" stroke-linejoin="round"/><ellipse cx="22" cy="16" rx="9" ry="4" fill="#fff" opacity=".25" transform="rotate(-30 22 16)"/></svg></i><span></span></button>
+</header>
+<p class="hint">Tap a stat to see the bounce</p>
+<script>
+(function(){
+var V={trophies:1530,gems:2224,lives:4,xp:800},MAX=5,sel={trophies:'tp',gems:'pg',lives:'ph',xp:'px'};
+var f=function(n){return Math.round(n).toLocaleString('en-US')};
+function paint(k,v){document.querySelector('#'+sel[k]+' span').textContent=k=='lives'?v+'/'+MAX:f(v)}
+function bump(id){var e=document.getElementById(id);e.classList.remove('bump');void e.offsetWidth;e.classList.add('bump')}
+function count(k,from,to){var t0=null,d=900;function s(ts){if(!t0)t0=ts;var p=Math.min(1,(ts-t0)/d),e=1-Math.pow(1-p,3);paint(k,from+(to-from)*e);if(p<1)requestAnimationFrame(s)}requestAnimationFrame(s)}
+Object.keys(V).forEach(function(k,i){if(k=='lives')paint(k,V[k]);else count(k,0,V[k]);document.getElementById(sel[k]).addEventListener('click',function(){bump(sel[k])})});
+/* API: TopBar.set({gems:2500,lives:5}) animates the changed values and bumps the pill */
+window.TopBar={set:function(o){Object.keys(o).forEach(function(k){if(!(k in V))return;var from=V[k];V[k]=o[k];if(k=='lives')paint(k,o[k]);else count(k,from,o[k]);bump(sel[k])})}};
+})();
+</script></body></html>

@@ -31,10 +31,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   themeColor = "purple",
   isNoGlowActive,
 }) => {
-  const noGlow =
-    isNoGlowActive !== undefined
-      ? isNoGlowActive
-      : activeTab === "store" || activeTab === "quests";
+  const noGlow = Boolean(isNoGlowActive);
 
   // Theme-reactive visual tokens (background gradient, border, glow, highlight, active button)
   const themeStyles = noGlow
@@ -48,6 +45,24 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
         inactiveHover: "hover:bg-white/5",
       }
     : {
+    magenta: {
+      bg: "bg-[#1f051a]/95 bg-gradient-to-t from-[#2e0926]/95 via-[#1a0518]/95 to-[#0c020b]/95",
+      border: "border-t border-pink-500/30",
+      glow: "rgba(236, 72, 153, 0.35)",
+      topHighlight: "from-transparent via-pink-400/35 to-transparent",
+      activePill: "bg-pink-500/25 border border-pink-400/65 text-pink-200 shadow-[0_0_12px_rgba(236,72,153,0.4)] scale-105",
+      activeGlow: "from-pink-400/25 to-transparent",
+      inactiveHover: "hover:bg-pink-500/10",
+    },
+    pink: {
+      bg: "bg-[#1f051a]/95 bg-gradient-to-t from-[#2e0926]/95 via-[#1a0518]/95 to-[#0c020b]/95",
+      border: "border-t border-pink-500/30",
+      glow: "rgba(236, 72, 153, 0.35)",
+      topHighlight: "from-transparent via-pink-400/35 to-transparent",
+      activePill: "bg-pink-500/25 border border-pink-400/65 text-pink-200 shadow-[0_0_12px_rgba(236,72,153,0.4)] scale-105",
+      activeGlow: "from-pink-400/25 to-transparent",
+      inactiveHover: "hover:bg-pink-500/10",
+    },
     purple: {
       bg: "bg-[#140a2a]/95 bg-gradient-to-t from-[#1c0d3a]/95 via-[#130826]/95 to-[#0c051a]/95",
       border: "border-t border-purple-500/20",

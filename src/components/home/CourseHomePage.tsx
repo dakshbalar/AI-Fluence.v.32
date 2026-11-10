@@ -14,7 +14,7 @@ import { AvatarProfilePage } from "./AvatarProfilePage";
 import { MoreSettingsPage } from "./MoreSettingsPage";
 import { DesktopLearningSidebar } from "./DesktopLearningSidebar";
 import { activeTimeTracker } from "../../services/activeTimeTracker";
-import { fetchOrCreateUserLives, UserLivesState } from "../../services/livesService";
+import { fetchOrCreateUserLives, grantDirectLives, UserLivesState } from "../../services/livesService";
 import { LevelLaunchBoxModal } from "./LevelLaunchBoxModal";
 import {
   COURSES_CATALOG,
@@ -444,8 +444,10 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
   // With User Requested Dynamic Glow:
   // "the glow should be accordingly to the league and the clan banner colour like currently in in bronze league I want it to have a bronze glow with black bg and I have a light blue banner this a light blue glow and I want this logic also for the top and bottom navigation bar as it"
   const activePageTheme: string = useMemo(() => {
-    if (activeNavTab === "store") return "white";
-    if (activeNavTab === "quests" || activeNavTab === "avatar") return "black";
+    if (activeNavTab === "store") return "blue";
+    if (activeNavTab === "quests") return "magenta";
+    if (activeNavTab === "avatar") return "black";
+    if (activeNavTab === "more") return "purple";
 
     if (activeNavTab === "leaderboard") {
       if (leaderboardSubTab === "clan") {
@@ -527,6 +529,14 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
   const handleAddDiamonds = (amount: number) => {
     addStoreDiamonds?.(amount);
     showToast(`💎 Gained +${amount} Diamonds!`);
+  };
+
+  const handleAddLife = async (count: number = 1) => {
+    const res = await grantDirectLives("", count);
+    if (res.state) {
+      setUserLivesState(res.state);
+      showToast(`❤️ Gained +${count} Life! Energy now ${res.state.currentLives}/5`);
+    }
   };
 
   const handleLaunchLesson = async (
@@ -924,8 +934,9 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
             trophiesCount={currentUserTrophies}
             diamondsCount={diamonds}
             playsCount={plays}
+            xpCount={gamificationState?.xp ?? 0}
             themeColor={activePageTheme}
-            isStoreActive={activeNavTab === "store" || activeNavTab === "avatar"}
+            isStoreActive={false}
             isCourseDropdownOpen={isCourseDropdownOpen}
             activeNavTab={activeNavTab}
             onSelectNavTab={(tab) => {
@@ -951,7 +962,11 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
               )
             }
             onOpenDiamonds={() => showToast(`💎 Diamonds: ${diamonds} available for rewards.`)}
+            onOpenXp={() => showToast(`⚡ Total XP: ${gamificationState?.xp ?? 0}`)}
             onOpenSpinWheel={() => setIsSpinWheelOpen(true)}
+            courses={dropdownCoursesList}
+            selectedCourseId={selectedCourseId}
+            onSelectCourse={handleSelectCourse}
           />
         )}
 
@@ -978,7 +993,7 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
 
         {/* 3. ACTIVE TAB PAGE CONTENT */}
         {activeNavTab === "home" && (
-          <div className="w-full flex flex-col lg:flex-row items-start justify-center gap-6 xl:gap-8 px-2 sm:px-4 lg:px-6 py-2">
+          <div className="w-full flex flex-col lg:flex-row items-start justify-center gap-6 xl:gap-8 px-2 sm:px-4 lg:px-6 pt-1 pb-2">
             {/* Left Column: Full Learning Map */}
             <div className="w-full flex-1 min-w-0 max-w-full lg:max-w-3xl xl:max-w-4xl mx-auto">
               <FullLearningMap
@@ -1163,7 +1178,7 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
         )}
 
         {activeNavTab === "quests" && (
-          <div className="w-full max-w-full md:max-w-4xl lg:max-w-6xl mx-auto px-2 sm:px-4 py-2">
+          <div className="w-full max-w-full md:max-w-4xl lg:max-w-6xl mx-auto px-2 sm:px-4 pt-0.5 pb-2">
             <QuestsPage
               courseId={selectedCourseId}
               onSelectCourse={handleSelectCourse}
@@ -1191,7 +1206,7 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
         )}
 
         {activeNavTab === "leaderboard" && (
-          <div className="w-full max-w-full md:max-w-4xl lg:max-w-5xl mx-auto px-2 sm:px-4 py-2">
+          <div className="w-full max-w-full md:max-w-4xl lg:max-w-5xl mx-auto px-2 sm:px-4 pt-0.5 pb-2">
             <LeaderboardPage
               courseId={selectedCourseId}
               onSelectCourse={handleSelectCourse}
@@ -1208,25 +1223,30 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
         )}
 
         {activeNavTab === "store" && (
-          <div className="w-full max-w-full md:max-w-4xl lg:max-w-6xl mx-auto px-2 sm:px-4 py-2">
+          <div className="w-full max-w-full md:max-w-4xl lg:max-w-6xl mx-auto px-2 sm:px-4 pt-0.5 pb-2">
             <StorePage
               diamonds={diamonds}
+              lives={plays}
+              xp={gamificationState?.xp ?? 0}
+              shield={streakCount}
               onSpendDiamonds={handleSpendDiamonds}
               onAddDiamonds={handleAddDiamonds}
               onAddXP={(amount) => {
+                addStoreXp?.(amount);
                 showToast(`⚡ Added +${amount} XP to your course rank!`);
               }}
+              onAddLife={handleAddLife}
               onActivateUnlimitedLives={(hours) => {
                 showToast(`🛡️ Activated Unlimited Lives for ${hours} Hour${hours > 1 ? "s" : ""}!`);
               }}
               onShowToast={showToast}
-              themeColor={currentCourse.theme}
+              themeColor={activePageTheme}
             />
           </div>
         )}
 
         {activeNavTab === "avatar" && (
-          <div className="w-full max-w-full md:max-w-3xl lg:max-w-4xl mx-auto px-2 sm:px-4 py-2">
+          <div className="w-full max-w-full md:max-w-3xl lg:max-w-4xl mx-auto px-2 sm:px-4 pt-0.5 pb-2">
             <AvatarProfilePage
               courseId={selectedCourseId}
               onSelectCourse={handleSelectCourse}
@@ -1256,7 +1276,7 @@ export const CourseHomePage: React.FC<CourseHomePageProps> = ({
         <BottomNavBar
           activeTab={activeNavTab}
           themeColor={activePageTheme}
-          isNoGlowActive={activeNavTab === "store" || activeNavTab === "avatar"}
+          isNoGlowActive={false}
           onSelectTab={(tab) => {
             if (activeNavTab !== "more" && activeNavTab !== "curriculum") {
               setPreviousNavTab(activeNavTab);

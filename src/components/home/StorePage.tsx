@@ -81,9 +81,14 @@ const STORAGE_KEY = "techno_store_v1";
 
 interface StorePageProps {
   diamonds?: number;
+  lives?: number;
+  xp?: number;
+  shield?: number;
   onSpendDiamonds?: (amount: number) => boolean;
   onAddDiamonds?: (amount: number) => void;
   onAddXP?: (amount: number) => void;
+  onAddLife?: (amount: number) => void;
+  onAddShield?: (amount: number) => void;
   onActivateUnlimitedLives?: (hours: number) => void;
   onShowToast?: (msg: string) => void;
   themeColor?: string;
@@ -101,9 +106,14 @@ interface RewardItem {
 
 export const StorePage: React.FC<StorePageProps> = ({
   diamonds,
+  lives,
+  xp,
+  shield,
   onSpendDiamonds,
   onAddDiamonds,
   onAddXP,
+  onAddLife,
+  onAddShield,
   onActivateUnlimitedLives,
   onShowToast,
 }) => {
@@ -128,12 +138,17 @@ export const StorePage: React.FC<StorePageProps> = ({
 
   const [storeState, setStoreState] = useState<StoreState>(() => {
     const defaultName = profile?.username || "Techno";
+    const initialGems = typeof diamonds === "number" ? diamonds : (gamificationState?.diamonds ?? 0);
+    const initialLives = typeof lives === "number" ? lives : 5;
+    const initialXp = typeof xp === "number" ? xp : (gamificationState?.xp ?? 0);
+    const initialShield = typeof shield === "number" ? shield : 0;
+
     const defaultState: StoreState = {
-      gems: typeof diamonds === "number" ? diamonds : 1250,
-      lives: 3,
-      xp: gamificationState?.xp || 800,
+      gems: initialGems,
+      lives: initialLives,
+      xp: initialXp,
       name: defaultName,
-      shield: 0,
+      shield: initialShield,
       boost: 0,
       inv: {},
     };
@@ -145,7 +160,10 @@ export const StorePage: React.FC<StorePageProps> = ({
         return {
           ...defaultState,
           ...parsed,
-          gems: typeof diamonds === "number" ? diamonds : (parsed.gems ?? 1250),
+          gems: initialGems,
+          lives: initialLives,
+          xp: initialXp,
+          shield: initialShield,
           name: profile?.username || parsed.name || defaultName,
         };
       }
@@ -195,17 +213,35 @@ export const StorePage: React.FC<StorePageProps> = ({
     });
   };
 
-  // Sync external diamonds if changed
+  // Sync external backend values (diamonds, lives, xp, shield) directly to store state whenever they change
   useEffect(() => {
-    if (typeof diamonds === "number" && diamonds !== storeState.gems) {
-      setStoreState((prev) => {
-        const next = { ...prev, gems: diamonds };
-        DRef.current.gems = diamonds;
-        setDispCounters((dc) => ({ ...dc, gems: Math.round(diamonds) }));
-        return next;
+    setStoreState((prev) => {
+      const nextGems = typeof diamonds === "number" ? diamonds : (gamificationState?.diamonds ?? prev.gems);
+      const nextLives = typeof lives === "number" ? lives : prev.lives;
+      const nextXp = typeof xp === "number" ? xp : (gamificationState?.xp ?? prev.xp);
+      const nextShield = typeof shield === "number" ? shield : prev.shield;
+
+      DRef.current.gems = nextGems;
+      DRef.current.lives = nextLives;
+      DRef.current.xp = nextXp;
+      DRef.current.shield = nextShield;
+
+      setDispCounters({
+        gems: Math.round(nextGems),
+        lives: nextLives,
+        xp: Math.round(nextXp),
+        shield: nextShield,
       });
-    }
-  }, [diamonds]);
+
+      return {
+        ...prev,
+        gems: nextGems,
+        lives: nextLives,
+        xp: nextXp,
+        shield: nextShield,
+      };
+    });
+  }, [diamonds, lives, xp, shield, gamificationState?.diamonds, gamificationState?.xp]);
 
   // Sync external username if changed
   useEffect(() => {
@@ -800,8 +836,10 @@ export const StorePage: React.FC<StorePageProps> = ({
         else if (addStoreXp) addStoreXp(v.n);
       } else if (v.t === 'life') {
         updatedLives = Math.min(5, updatedLives + 1);
+        if (onAddLife) onAddLife(1);
       } else if (v.t === 'shield') {
         updatedShield += 1;
+        if (onAddShield) onAddShield(1);
       } else if (v.t === 'boost' && v.h) {
         updatedBoost = Math.max(Date.now(), updatedBoost) + v.h * 3600000;
         if (onActivateUnlimitedLives) onActivateUnlimitedLives(v.h);
@@ -1503,7 +1541,7 @@ export const StorePage: React.FC<StorePageProps> = ({
         <div className="scholar-bar" id="bar">
           <div className="scholar-pill g" id="pg">
             <GemSvg size={22} />
-            <span>{dispCounters.gems}</span>
+            <span>{dispCounters.gems.toLocaleString()}</span>
           </div>
           <div className="scholar-pill" id="ph">
             <HeartSvg size={22} />
@@ -1511,11 +1549,11 @@ export const StorePage: React.FC<StorePageProps> = ({
           </div>
           <div className="scholar-pill" id="px">
             <XpSvg size={22} />
-            <span>{dispCounters.xp}</span>
+            <span>{dispCounters.xp.toLocaleString()}</span>
           </div>
           <div className="scholar-pill" id="ps">
             <ShieldStreakSvg size={22} />
-            <span>{dispCounters.shield}</span>
+            <span>{dispCounters.shield.toLocaleString()}</span>
           </div>
         </div>
 

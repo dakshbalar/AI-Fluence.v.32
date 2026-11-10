@@ -15,6 +15,7 @@ import {
   Zap,
 } from "lucide-react";
 import { GenAILesson } from "../../data/genaiPromptEngineeringData";
+import { recordFlashcardReview } from "../../services/learningTrackerService";
 import { AIfluenceAvatar } from "../avatar/AIfluenceAvatar";
 import { AIDEN_CONFIG, VEX_CONFIG, LUMI_CONFIG } from "../../data/characters";
 import { CornerStarsAndSmokeBackground } from "../onboarding-animations/shared/CornerStarsAndSmokeBackground";
@@ -387,6 +388,7 @@ export const GenAITheorySlideReaderModal: React.FC<GenAITheorySlideReaderModalPr
     }
 
     if (currentSlide < totalSlides - 1) {
+      recordFlashcardReview(1, "generative_ai").catch(() => {});
       setCurrentSlide((prev) => prev + 1);
     } else {
       // Completed the 11 slides! Record 3 stars and progression

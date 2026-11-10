@@ -14,6 +14,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { GeneratedTheorySlide } from "../../types/curriculum";
+import { recordFlashcardReview } from "../../services/learningTrackerService";
 
 interface TheoryDeckSlideModalProps {
   isOpen: boolean;
@@ -46,6 +47,7 @@ export const TheoryDeckSlideModal: React.FC<TheoryDeckSlideModalProps> = ({
   const isLastSlide = currentSlideIndex === slides.length - 1;
 
   const handleNext = () => {
+    recordFlashcardReview(1, "generative_ai").catch(() => {});
     if (isLastSlide) {
       onStartQuiz();
     } else {

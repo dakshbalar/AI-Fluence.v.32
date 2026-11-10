@@ -9,6 +9,7 @@ import {
   MAX_LIVES,
 } from "../../services/livesService";
 import { RewardedAdModal } from "./RewardedAdModal";
+import { recordLevelLaunchWithLife } from "../../services/levelTrackingService";
 
 interface LevelLaunchBoxModalProps {
   isOpen: boolean;
@@ -86,6 +87,7 @@ export const LevelLaunchBoxModal: React.FC<LevelLaunchBoxModalProps> = ({
       setLivesState(res.state);
 
       if (res.success) {
+        recordLevelLaunchWithLife(String(levelId), "generative_ai", levelTitle).catch(console.warn);
         onShowToast?.(res.message);
         onLaunchLevel(levelId);
         onClose();
@@ -114,6 +116,7 @@ export const LevelLaunchBoxModal: React.FC<LevelLaunchBoxModalProps> = ({
         setLivesState(consumeRes.state);
 
         if (consumeRes.success) {
+          recordLevelLaunchWithLife(String(levelId), "generative_ai", levelTitle).catch(console.warn);
           onShowToast?.(`🚀 Level ${levelId} Launched with Refilled Life!`);
           onLaunchLevel(levelId);
           onClose();

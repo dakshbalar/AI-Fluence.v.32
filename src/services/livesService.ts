@@ -356,3 +356,60 @@ export async function grantAdRewardLife(
     };
   }
 }
+
+/**
+ * Grant direct lives from store purchases or items
+ */
+export async function grantDirectLives(
+  userId: string,
+  count: number = 1
+): Promise<{ success: boolean; state: UserLivesState; message: string }> {
+  const targetUid = userId || auth.currentUser?.uid || loadStoredStudentProfile()?.userId || "guest_user";
+  const docRef = doc(db, "user_lives", targetUid);
+
+  try {
+    const currentState = await fetchOrCreateUserLives(targetUid);
+    const newLives = Math.min(MAX_LIVES, currentState.currentLives + count);
+    const nowIso = new Date().toISOString();
+    const isNowFull = newLives >= MAX_LIVES;
+
+    const updatedData: Partial<UserLivesDoc> = {
+      userId: targetUid,
+      currentLives: newLives,
+      maxLives: MAX_LIVES,
+      lastLifeConsumedAt: isNowFull ? null : currentState.lastLifeConsumedAt,
+      lastUpdatedAt: nowIso,
+    };
+
+    await setDoc(docRef, updatedData, { merge: true });
+
+    const txId = `tx_${targetUid}_${Date.now()}`;
+    setDoc(doc(db, "life_transactions", txId), {
+      userId: targetUid,
+      type: "admin_adjustment",
+      amount: count,
+      reason: "store_refill",
+      timestamp: nowIso,
+    }).catch(() => {});
+
+    const updatedState = calculateRegeneratedLives({
+      currentLives: newLives,
+      maxLives: MAX_LIVES,
+      lastLifeConsumedAt: isNowFull ? null : currentState.lastLifeConsumedAt,
+    });
+
+    return {
+      success: true,
+      state: updatedState,
+      message: `❤️ Refilled +${count} Life (${newLives}/5 Lives)!`,
+    };
+  } catch (error) {
+    console.warn("Failed direct life grant:", error);
+    const fallbackState = await fetchOrCreateUserLives(targetUid);
+    return {
+      success: false,
+      state: fallbackState,
+      message: "⚠️ Could not refill life.",
+    };
+  }
+}

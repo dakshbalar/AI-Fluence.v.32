@@ -223,24 +223,38 @@ export const QuestsPage: React.FC<QuestsPageProps> = ({
           setAssessmentCompleted(Boolean(activityDoc.assessmentCompleted));
           setMonthlyQP(monthProgress.completedDays || 0);
 
-          // Merge activity metrics into live daily quests progress
+          // Check local storage quest overrides if present
+          let localQuests: QuestItem[] = [];
+          try {
+            const rawLocal = localStorage.getItem(STORAGE_KEY_DAILY);
+            if (rawLocal) localQuests = JSON.parse(rawLocal);
+          } catch (e) {}
+
+          // Merge activity metrics & local progress into live daily quests progress
           const syncedQuests = (studentQuestDoc.quests || []).map((q) => {
             let currentP = q.p;
-            if (q.category === "time") {
-              currentP = Math.max(q.p, activityDoc.activeMinutes || 0);
-            } else if (q.category === "lessons" && activityDoc.lessonsCompleted > 0) {
-              currentP = Math.max(q.p, activityDoc.lessonsCompleted);
-            } else if (q.category === "assessment" && activityDoc.assessmentCompleted) {
+            const cat = (q.category || "").toLowerCase();
+            const localMatch = localQuests.find((lq) => lq.id === q.id || lq.category === q.category);
+            if (localMatch && localMatch.p > currentP) {
+              currentP = localMatch.p;
+            }
+
+            if (cat === "time") {
+              currentP = Math.max(currentP, activityDoc.activeMinutes || 0);
+            } else if (cat === "lessons" && activityDoc.lessonsCompleted > 0) {
+              currentP = Math.max(currentP, activityDoc.lessonsCompleted);
+            } else if (cat === "assessment" && activityDoc.assessmentCompleted) {
               currentP = q.g;
             }
+
             return {
               id: q.id,
               t: q.t,
               d: q.d,
-              p: currentP,
+              p: Math.min(q.g, currentP),
               g: q.g,
               r: q.r,
-              claimed: Boolean(q.claimed),
+              claimed: Boolean(q.claimed || localMatch?.claimed),
               isMandatory: Boolean(q.isMandatory),
               category: q.category
             };
